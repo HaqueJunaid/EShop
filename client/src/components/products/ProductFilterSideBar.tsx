@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import PriceRangeSlider from '../common/PriceRangeSlider'
+import PriceRangeSlider from '../common/PriceRangeSlider.tsx'
 import { CiFilter } from "react-icons/ci";
 import { FaFilter } from "react-icons/fa";
 

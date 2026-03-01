@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import UserLayout from './components/layout/userLayout'
-import HomePage from './pages/HomePage'
-import Faqs from './pages/Faqs'
-import AboutUs from './pages/AboutUs'
-import ContactUs from './pages/ContactUs'
+import UserLayout from './components/layout/userLayout.tsx'
+import HomePage from './pages/HomePage.tsx'
+import Faqs from './pages/Faqs.tsx'
+import AboutUs from './pages/AboutUs.tsx'
+import ContactUs from './pages/ContactUs.tsx'
 import Lenis from 'lenis'
-import ProductLayout from './components/layout/ProductLayout'
-import DetailProduct from './components/products/DetailProduct'
+import ProductLayout from './components/layout/ProductLayout.tsx'
+import DetailProduct from './components/products/DetailProduct.tsx'
 
 // Smooth Scroll
 // @ts-ignore

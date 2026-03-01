@@ -1,6 +1,6 @@
 import React from 'react'
-import ProductGallary from './ProductGallary'
-import ProductContent from './ProductContent'
+import ProductGallary from './ProductGallary.tsx'
+import ProductContent from './ProductContent.tsx'
 
 const DetailProduct: React.FC = () => {
 
