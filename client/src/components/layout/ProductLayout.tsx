@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import ProductFilterSideBar from '../products/productFilterSideBar.tsx'
+import ProductFilterSideBar from '../products/ProductFilterSidebar.tsx'
 import SortBy from '../common/SortBy.tsx'
 import LayoutChanger, { type LayoutMode } from '../common/LayoutChanger.tsx'
 import ProductGrid from '../products/ProductGrid.tsx'
