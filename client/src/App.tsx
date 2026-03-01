@@ -9,6 +9,7 @@ import ProductLayout from './components/layout/ProductLayout'
 import DetailProduct from './components/products/DetailProduct'
 
 // Smooth Scroll
+// @ts-ignore
 const lenis = new Lenis({
   autoRaf: true,
 });
