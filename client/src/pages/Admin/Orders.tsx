@@ -59,14 +59,15 @@ const Orders = () => {
   const calcQty = (items: OrderItem[]) => items.reduce((s, it) => s + it.qty, 0);
 
   return (
-    <div className="p-5 w-full min-h-screen">
+    <div className="p-5 w-full min-h-screen overflow-x-hidden">
       <div className="flex items-center justify-start gap-2 text-stone-900 mb-6">
         <ShoppingCartIcon size={28} />
         <h1 className="text-2xl font-medium">All Orders</h1>
       </div>
 
-      <div className="overflow-x-auto rounded-3xl border border-stone-200 bg-white shadow-sm">
-        <table className="min-w-245 w-full table-auto border-separate border-spacing-y-0">
+      {/* Table for md+ screens */}
+      <div className="hidden md:block w-full overflow-x-auto rounded-3xl border border-stone-200 bg-white shadow-sm">
+        <table className="min-w-175 w-full table-auto border-separate border-spacing-y-0">
           <thead className="bg-stone-100">
             <tr className="text-left text-sm uppercase tracking-[0.15em] text-stone-500">
               <th className="px-5 py-4">Order ID</th>
@@ -80,7 +81,7 @@ const Orders = () => {
           </thead>
           <tbody>
             {orders.map((order) => (
-              <tr key={order.id} className="rounded-3xl border border-stone-100 bg-white transition">
+              <tr key={order.id} className="rounded-3xl overflow-hidden border border-stone-100 bg-white transition">
                 <td className="px-5 py-5 align-top">
                   <div className="font-semibold text-stone-900">{order.id}</div>
                 </td>
@@ -126,11 +127,55 @@ const Orders = () => {
         </table>
       </div>
 
+      {/* Card view for mobile */}
+      <div className="block md:hidden space-y-5">
+        {orders.map((order) => (
+          <div key={order.id} className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-stone-900">{order.id}</span>
+              <span className="text-xs text-stone-500">{order.date}</span>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {order.items.map((it, i) => (
+                <span key={i} className="inline-block bg-stone-100 rounded-full px-3 py-1 text-xs text-stone-700">
+                  {it.name} <span className="text-stone-400">×{it.qty}</span>
+                </span>
+              ))}
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-sm text-stone-700">Qty: <b>{calcQty(order.items)}</b></span>
+              <span className="text-base font-bold text-stone-900">${calcTotal(order.items).toLocaleString()}</span>
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <select
+                value={order.status}
+                onChange={(e) => updateStatus(order.id, e.target.value as Order["status"])}
+                className="rounded-full border border-stone-200 bg-stone-100 px-3 py-1 text-xs text-stone-700 focus:outline-none"
+              >
+                <option>Pending</option>
+                <option>Processing</option>
+                <option>Shipped</option>
+                <option>Delivered</option>
+                <option>Cancelled</option>
+              </select>
+              <button
+                type="button"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-500 transition hover:border-stone-300 hover:text-stone-900"
+                aria-label="Show order details"
+                onClick={() => handleDetailToggle(order.id)}
+              >
+                <Eye size={16} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {isDetailOn && (
-        <div onClick={() => handleDetailToggle(null)} className="absolute left-0 top-0 w-full h-full z-100 bg-stone-950/10 backdrop-blur-sm"></div>
+        <div onClick={() => handleDetailToggle(null)} className="absolute left-0 top-0 w-full h-screen z-100 bg-stone-950/10 backdrop-blur-sm"></div>
       )}
       {isDetailOn && filteredProduct && (
-        <div className="fixed inset-0 z-110 flex items-center justify-center px-4 py-6">
+        <div className="w-full h-screen fixed inset-0 z-110 flex items-center justify-center px-4 py-6">
           <div className="absolute inset-0 bg-stone-950/30 backdrop-blur-sm" onClick={() => handleDetailToggle(null)} />
           <div className="relative z-10 w-full max-w-3xl overflow-hidden rounded-4xl border border-stone-200 bg-white shadow-2xl">
             <div className="flex items-start justify-between gap-4 border-b border-stone-200 px-6 py-5">
@@ -192,18 +237,18 @@ const Orders = () => {
         </div>
       )}
 
-        <div className="mt-8 shadow-sm rounded-3xl border-2 border-stone-200 bg-white p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-semibold text-stone-900">Order Summary</h3>
-            <p className="text-sm text-stone-500">Total volume of all listed orders</p>
-          </div>
-          <div className="text-right">
-            <p className="text-sm uppercase tracking-widest text-stone-500">Total Revenue</p>
-            <p className="text-3xl font-bold text-indigo-600">
-              ${orders.reduce((acc, order) => acc + calcTotal(order.items), 0).toLocaleString()}
-            </p>
-          </div>
+      <div className="mt-8 shadow-sm rounded-3xl border-2 border-stone-200 bg-white p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-semibold text-stone-900">Order Summary</h3>
+          <p className="text-sm text-stone-500">Total volume of all listed orders</p>
         </div>
+        <div className="text-right">
+          <p className="text-sm uppercase tracking-widest text-stone-500">Total Revenue</p>
+          <p className="text-3xl font-bold text-indigo-600">
+            ${orders.reduce((acc, order) => acc + calcTotal(order.items), 0).toLocaleString()}
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
