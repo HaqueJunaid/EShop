@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import ScrollToTop from "./utils/ScrollToTop.tsx"; // Path to your helper file
 import UserLayout from './components/layout/userLayout.tsx'
 import HomePage from './pages/HomePage.tsx'
@@ -49,6 +49,7 @@ const App = () => {
           <Route path="orders/:id" element={<OrderDetail />} />
         </Route>
         <Route  element={<AdminLayout />}>
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/products" element={<Products />} />
           <Route path="/admin/orders" element={<Orders />} />
