@@ -46,7 +46,7 @@ const Sidebar = ({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: () => void}) 
             </div>
             <div className="mt-5">
                 {adminLinks.map((item, index) => (
-                    <Link to={item.link} key={index} className={`rounded-lg flex items-center  gap-2 px-3 py-3 mb-2 text-lg font-medium transition ${pathname === item.link ? 'bg-[#FCB435] text-stone-50 hover:bg-[#FCB435]/90 ' : 'text-stone-700 hover:bg-stone-200'}`}>
+                    <Link onClick={setIsOpen} to={item.link} key={index} className={`rounded-lg flex items-center  gap-2 px-3 py-3 mb-2 text-lg font-medium transition ${pathname === item.link ? 'bg-[#FCB435] text-stone-50 hover:bg-[#FCB435]/90 ' : 'text-stone-700 hover:bg-stone-200'}`}>
                         <span className="mr-2">{item.icon}</span>
                         {item.label}
                     </Link>

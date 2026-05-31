@@ -239,10 +239,10 @@ const Orders = () => {
 
       <div className="mt-8 shadow-sm rounded-3xl border-2 border-stone-200 bg-white p-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-stone-900">Order Summary</h3>
-          <p className="text-sm text-stone-500">Total volume of all listed orders</p>
+          <h3 className="text-lg font-semibold text-stone-900 text-center md:text-left">Order Summary</h3>
+          <p className="text-sm text-stone-500 text-center md:text-left">Total volume of all listed orders</p>
         </div>
-        <div className="text-right">
+        <div className="text-center md:text-right">
           <p className="text-sm uppercase tracking-widest text-stone-500">Total Revenue</p>
           <p className="text-3xl font-bold text-indigo-600">
             ${orders.reduce((acc, order) => acc + calcTotal(order.items), 0).toLocaleString()}
