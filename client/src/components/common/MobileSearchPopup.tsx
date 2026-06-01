@@ -31,10 +31,10 @@ const MobileSearchPopup: React.FC<MobileSearchPopupProps> = ({ open, onClose }) 
   if (!open) return null
 
   return (
-    <div className='lg:hidden z-50 fixed inset-0' onClick={onClose}>
-      <div className='absolute inset-0 bg-black/40' />
+    <div className='lg:hidden z-99 fixed inset-0' onClick={onClose}>
+      <div className='absolute h-screen z-98 inset-0 bg-black/40' />
       <div
-        className='relative mx-auto mt-16 px-4 w-full max-w-md'
+        className='relative z-99 mx-auto mt-16 px-4 w-full max-w-md'
         onClick={(e) => e.stopPropagation()}
         role='dialog'
         aria-modal='true'

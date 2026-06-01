@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, ShoppingCartIcon } from "lucide-react";
+import { Eye, SearchIcon, ShoppingCartIcon } from "lucide-react";
 
 type OrderItem = {
   name: string;
@@ -60,9 +60,21 @@ const Orders = () => {
 
   return (
     <div className="p-5 w-full min-h-screen overflow-x-hidden">
-      <div className="flex items-center justify-start gap-2 text-stone-900 mb-6">
-        <ShoppingCartIcon size={28} />
-        <h1 className="text-2xl font-medium">All Orders</h1>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-start gap-2 text-stone-900">
+          <ShoppingCartIcon size={28} />
+          <h1 className="text-2xl font-medium">All Orders</h1>
+        </div>
+        <div className="flex items-center justify-center gap-3">
+          <input
+            className="w-[200px] rounded-full border border-stone-200 bg-stone-100 px-3 py-2 text-sm text-stone-700 focus:outline-2 focus:outline-stone-900"
+            type="text"
+            placeholder="Search"
+          />
+          <button className="rounded-full bg-stone-900 px-3 py-2 text-sm text-stone-50 border-2 border-stone-900 focus:outline-stone-200 flex items-center justify-center gap-2" type="button">
+            <SearchIcon size={20} /> Search
+          </button>
+        </div>
       </div>
 
       {/* Table for md+ screens */}

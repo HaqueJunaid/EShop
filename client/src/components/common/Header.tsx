@@ -40,7 +40,7 @@ const Header: React.FC = () => {
       >
         <div className='absolute inset-0 bg-black/40' />
         <aside
-          className={`absolute top-0 right-0 h-full w-1/2 max-w-xs bg-stone-50 shadow-xl transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`absolute top-0 right-0 h-full w-4/5 max-w-xs bg-stone-50 shadow-xl transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
           onClick={(e) => e.stopPropagation()}
           role='dialog'
           aria-modal='true'
@@ -56,7 +56,7 @@ const Header: React.FC = () => {
             </button>
           </div>
 
-          <nav className='flex flex-col px-4 py-3 text-stone-800 text-sm'>
+          <nav className='flex flex-col px-4 py-3 text-stone-800 text-sm z-110'>
             <Link className='py-3 border-stone-100 border-b' to='/' onClick={() => setIsMobileMenuOpen(false)}>
               Home
             </Link>
@@ -73,16 +73,17 @@ const Header: React.FC = () => {
               Contact Us
             </Link>
           </nav>
-          <div className='bottom-0 left-0 z-40 absolute flex justify-between items-center bg-stone-50 px-4.5 py-4 border-stone-300 border-t w-full text-stone-800'>
+          <div className='bottom-0 left-0 z-110 absolute flex justify-between items-center px-4.5 py-4 border-stone-300 border-t w-full text-stone-800'>
             <Link to={`/profile`} onClick={() => setIsMobileMenuOpen(false)} className='flex items-center gap-2'>
               <div className='flex justify-center items-center bg-stone-200/80 border-2 border-stone-300 rounded-full size-10'>
                 <LuUserRound className='size-6' />
               </div>
               <h2 className='font-noraml text-lg'>Profile</h2>
             </Link>
-            <IoIosArrowUp className='size-5' onClick={() => {setIsOpen(!isOpen)}} />
+            <IoIosArrowUp className={`size-5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} onClick={() => { setIsOpen(!isOpen) }} />
           </div>
-          <div className={`w-full h-52 bg-stone-50 ${isOpen ? 'bottom-0' : '-bottom-100'} absolute px-4.5 py-4 transition-all duration-300 z-35 `}>
+          {/* Profile dropdown, always overlays above menu and is fully visible */}
+          <div className={`w-full max-w-xs bg-stone-50 absolute left-0 transition-all duration-300 z-50 ${isOpen ? 'bottom-16 opacity-100 pointer-events-auto' : 'bottom-0 opacity-0 pointer-events-none'}`} style={{ boxShadow: isOpen ? '0 8px 32px rgba(0,0,0,0.10)' : 'none' }}>
             <div className='block z-100 relative hover:bg-stone-50 mb-1 p-2 py-3 border border-stone-300 rounded-md w-full text-sm text-nowrap'>
               <Link to={`/register`} className='flex items-center gap-1 px-2 py-0.5 rounded-sm cursor-pointer'>
                 <FiUserPlus className="size-5" /> Sign Up

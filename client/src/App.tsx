@@ -19,7 +19,7 @@ import Dashboard from './pages/Admin/Dashboard.tsx';
 import Products from './pages/Admin/Products.tsx';
 import Insights from './pages/Admin/Insights.tsx';
 import Orders from './pages/Admin/Orders.tsx';
-import { Users } from 'lucide-react';
+import Users from "./pages/Admin/Users.tsx"
 
 // Admin Related Components
 const AdminLayout = React.lazy(() => import('./components/layout/AdminLayout.tsx'));
@@ -48,7 +48,7 @@ const App = () => {
           <Route path="products/:id/details" element={<DetailProduct />} />
           <Route path="orders/:id" element={<OrderDetail />} />
         </Route>
-        <Route  element={<AdminLayout />}>
+        <Route element={<AdminLayout />}>
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/products" element={<Products />} />
