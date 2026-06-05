@@ -38,7 +38,7 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: () => void
             <button onClick={() => (setIsOpen())} className='absolute flex lg:hidden items-center justify-center top-5 -right-5 size-10 bg-white shadow-md rounded-full'>
                 <X size={20} />
             </button>
-            <div className='flex items-center gap-1'>
+            <div className='flex items-center gap-2.5'>
                 <Link to="/">
                     <img className='size-10' src="/favicon.svg" alt="Logo" />
                 </Link>

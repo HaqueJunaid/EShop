@@ -1,5 +1,7 @@
 import { Edit3, PackageSearch, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import ProductAddForm from "./ProductAddForm";
 
 // Demo product type
 interface Product {
@@ -9,6 +11,7 @@ interface Product {
   description: string;
   quantity: number;
   price: number;
+  category?: string;
 }
 
 const demoProducts: Product[] = [
@@ -19,6 +22,7 @@ const demoProducts: Product[] = [
     imageUrl: "https://picsum.photos/600/500?random=1",
     quantity: 12,
     price: 129,
+    category: "Audio",
   },
   {
     id: "P-1002",
@@ -27,6 +31,7 @@ const demoProducts: Product[] = [
     imageUrl: "https://picsum.photos/600/500?random=2",
     quantity: 0,
     price: 199,
+    category: "Wearables",
   },
   {
     id: "P-1003",
@@ -35,14 +40,34 @@ const demoProducts: Product[] = [
     description: "Portable Bluetooth speaker with deep bass.",
     quantity: 7,
     price: 89,
+    category: "Audio",
   },
 ];
 
 const Products = () => {
   useEffect(() => {
-      document.title = "Admin | All Products"
-    }, [])
-  const [products] = useState<Product[]>(demoProducts);
+    document.title = "Admin | All Products"
+  }, [])
+  const [products, setProducts] = useState<Product[]>(demoProducts);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors },
+  } = useForm<Product>();
+
+  const onSubmit: SubmitHandler<Product> = (data) => {
+    if (products.some((p) => p.id.toLowerCase() === data.id.toLowerCase())) {
+      setError("id", { type: "manual", message: "Product ID must be unique" });
+      return;
+    }
+    setProducts((prev) => [...prev, data]);
+    setIsOpen(false);
+    reset();
+  };
 
   return (
     <div className="p-5 w-full min-h-screen">
@@ -51,7 +76,12 @@ const Products = () => {
           <PackageSearch size={28} />
           <h1 className="text-2xl font-medium">All Products</h1>
         </div>
-        <button className="flex items-center justify-center gap-2 px-4 py-2 bg-stone-900 text-stone-50 rounded-md hover:scale-95 transition-all duration-300 ease-in-out cursor-pointer"><Plus size={25} /> Add Product</button>
+        <button
+          onClick={() => setIsOpen(true)}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-stone-950 text-stone-50 rounded-md hover:scale-95 transition-all duration-300 ease-in-out cursor-pointer"
+        >
+          <Plus size={25} /> Add Product
+        </button>
       </div>
       <ul className="space-y-6">
         {products.map((product) => (
@@ -62,8 +92,13 @@ const Products = () => {
             <img className="size-28 md:size-20 object-cover rounded-lg sm:mx-0" src={product.imageUrl} alt={product.title} />
             <div className="flex flex-col sm:flex-row sm:justify-between w-full gap-4">
               <div className="flex-1">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
                   <span className="text-lg font-bold text-stone-900">{product.title}</span>
+                  {product.category && (
+                    <span className="text-xs font-semibold bg-stone-100 text-stone-600 px-3 py-1 rounded-full">
+                      {product.category}
+                    </span>
+                  )}
                   <span className={`text-xs w-fit font-semibold px-3 py-1 rounded-full ${product.quantity > 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
                     {product.quantity > 0 ? `${product.quantity} in stock` : "Out of stock"}
                   </span>
@@ -100,6 +135,14 @@ const Products = () => {
           </p>
         </div>
       </div>
+
+      {/* Add Product Modal */}
+      {isOpen && <ProductAddForm
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onAddProduct={onSubmit}
+        existingIds={products.map((p) => p.id)}
+      />}
     </div>
   );
 };
