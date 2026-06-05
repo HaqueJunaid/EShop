@@ -7,7 +7,7 @@ const Footer = () => {
             <div className="flex md:flex-row flex-col justify-between gap-10 pb-7 border-gray-500/30 border-b w-full">
                 <div className="md:max-w-96">
                     <Link to="/" >
-                        <img className='-ml-2 lg:-ml-4 size-16 lg:size-25' src="https://srishbish.com/cdn/shop/files/SRISHBISH_2_244x.png?v=1648184973" alt="Logo" />
+                        <img className='-ml-1 w-30 lg:w-40 mb-5' src="/Assets/Logo.svg" alt="Logo" />
                     </Link>
                     <p className="text-sm">
                         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -30,7 +30,7 @@ const Footer = () => {
                             <p className='w-2/3'>The latest Products, Upcoming Products, and resources, sent to your inbox weekly.</p>
                             <div className="flex flex-col lg:flex-row lg:items-center gap-2 pt-4">
                                 <input className="px-2 border border-gray-500/30 rounded outline-none ring-stone-600 focus:ring-2 w-full max-w-64 h-9 placeholder-gray-500" type="email" placeholder="Enter your email" />
-                                <button className="bg-stone-800 w-fit hover:bg-stone-900 px-5 rounded-sm h-9 text-normal text-stone-50 transition-all duration-300 cursor-pointer easeInOut">Subscribe</button>
+                                <button className="bg-[#E41F66] w-fit hover:bg-[#c60b4d] px-5 rounded-sm h-9 text-normal text-stone-50 transition-all duration-300 cursor-pointer easeInOut">Subscribe</button>
                             </div>
                         </div>
                     </div>

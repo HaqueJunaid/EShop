@@ -38,7 +38,7 @@ const ProductContent: React.FC<ProductContentProps> = ({ id, title, price, inSto
         }
     }
 
-    
+
     const normalizedActionPrice = Number(String(price).replace(/[^0-9.-]/g, '')) || 0
 
     return (
@@ -103,9 +103,9 @@ const ProductContent: React.FC<ProductContentProps> = ({ id, title, price, inSto
                 <h3 className='mb-2 text-stone-800'>Design Variants</h3>
                 <div className='flex flex-wrap gap-4'>
                     {variants.map((variant, index) => (
-                        <div key={index} onClick={() => { setActiveVariant(index); handleVariantChange(index); }} className={`relative flex flex-col items-center gap-2 ${activeVariant === index ? 'outline-2 outline-yellow-500 rounded-md p-1' : ''} cursor-pointer`}>
+                        <div key={index} onClick={() => { setActiveVariant(index); handleVariantChange(index); }} className={`relative flex flex-col items-center gap-2 ${activeVariant === index ? 'outline-2 outline-[#E41F66] rounded-md p-1' : ''} cursor-pointer`}>
                             <img src={variant.images[0]} alt={variant.name} className='border border-stone-300 rounded-md w-20 h-23 object-cover' />
-                            {activeVariant === index && <p className='bottom-0 z-10 absolute bg-yellow-500 w-full text-stone-50 text-xs text-center'>Selected</p>}
+                            {activeVariant === index && <p className='bottom-0 z-10 absolute bg-[#E41F66] w-full text-stone-50 text-xs text-center'>Selected</p>}
                         </div>
                     ))}
                 </div>
@@ -136,7 +136,7 @@ const ProductContent: React.FC<ProductContentProps> = ({ id, title, price, inSto
                     </div>
                 ))}
             </div>}
-                <div className='flex gap-5 pt-3 pb-4 border-stone-300 border-b border-dashed'>
+            <div className='flex gap-5 pt-3 pb-4 border-stone-300 border-b border-dashed'>
                 <div className='flex items-center gap-2 cursor-pointer'>
                     <AddToWishListButton id={id} title={title} price={normalizedActionPrice} imageUrl={variants?.[activeVariant]?.images?.[0]} /> Wishlist
                 </div>

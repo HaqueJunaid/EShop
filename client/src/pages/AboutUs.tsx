@@ -1,7 +1,13 @@
+import { Link } from 'react-router-dom'
 import Heading from '../components/common/Heading'
 import React from 'react'
+import { useEffect } from 'react'
 
 const AboutUs: React.FC = () => {
+    useEffect(() => {
+        document.title = "VivahStore | About";
+    }, []);
+
     return (
         <div className='bg-stone-50 py-8 pb-14 w-full'>
             <div className='px-6'>
@@ -17,14 +23,14 @@ const AboutUs: React.FC = () => {
                         <p className="text-lg">In a graphic studio, what job profile do you assign someone who has advanced life experience, a little less than intermediary, almost non existent software experience but pro level hand skills? Odd candidate you think? Well we disagree because our Nani Intern is a rock star, she's 100% high on life, 150% high on art and craft skills and occasionally, more secretly a little high on gulab jamun.</p>
                         <strong className='inline-block mt-8 font-semibold text-stone-900 text-lg'>Defining old age as simply bold age, she is 70 years yound with a passion of a 18 year old.</strong>
 
-                        <a href="#" className="flex items-center gap-2 bg-[#FCB435] mt-8 px-8 py-3 rounded-full w-max text-white transition hover:-translate-y-0.5">
+                        <Link to="/" className="flex items-center gap-2 bg-[#E41F66] mt-8 px-8 py-3 rounded-md w-max text-white transition hover:bg-[#c60b4d]">
                             <span>Read more</span>
                             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M12.53 6.53a.75.75 0 0 0 0-1.06L7.757.697a.75.75 0 1 0-1.06 1.06L10.939 6l-4.242 4.243a.75.75 0 0 0 1.06 1.06zM0 6v.75h12v-1.5H0z"
                                     fill="#fff" />
                             </svg>
-                        </a>
+                        </Link>
                     </div>
                 </section>
                 <section className="flex md:flex-row flex-col-reverse flex-reverse justify-center items-center gap-10 mt-24">
@@ -32,7 +38,7 @@ const AboutUs: React.FC = () => {
                         <p className="text-lg">They said to me "Aaj mere pass Mac Book Pros hai, iPad Pro hai, 100k followers hai, blue tick hai, 7million views hai, kyaa hai tumhare paas?"</p>
                         <strong className='inline-block mt-8 font-semibold text-stone-900 text-lg'>Mere paas Srishbish mom hai!!</strong>
 
-                        <a href="#" className="flex items-center gap-2 bg-[#FCB435] mt-8 px-8 py-3 rounded-full w-max text-white transition hover:-translate-y-0.5">
+                        <a href="#" className="flex items-center gap-2 bg-[#E41F66] mt-8 px-8 py-3 rounded-md w-max text-white transition hover:bg-[#c60b4d]">
                             <span>Read more</span>
                             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path

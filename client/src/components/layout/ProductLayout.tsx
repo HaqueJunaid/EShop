@@ -7,6 +7,10 @@ import ProductGrid from '../products/ProductGrid.tsx'
 import ProductCard from '../products/ProductCard.tsx'
 
 const ProductLayout: React.FC = () => {
+  useEffect(() => {
+    document.title = "VivahStore | Products";
+  }, []);
+
   const { id } = useParams()
   const [searchParams] = useSearchParams();
   const [sort, setSort] = useState(searchParams.get('sort') || 'featured')

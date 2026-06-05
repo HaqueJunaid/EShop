@@ -16,10 +16,10 @@ const HeadBar: React.FC<HeadBarProps> = ({ onMenuClick, onSearchClick }) => {
   const wishlistLength = useWishlistStore((state: any) => state.getWishlistItemsLength());
 
   return (
-    <div className='relative bg-stone-50 mx-auto px-4 lg:px-1.5 py-2 lg:py-1.5 border-stone-200 border-b w-full'>
+    <div className='relative bg-stone-50 mx-auto px-4 lg:px-1.5 py-4 lg:py-7 border-stone-200 border-b w-full'>
       <div className='top-0 left-0 relative flex justify-between items-center mx-auto w-full lg:w-2/3 h-fit'>
         <Link to="/">
-          <img className='size-15 lg:size-25' src="https://srishbish.com/cdn/shop/files/SRISHBISH_2_244x.png?v=1648184973" alt="Logo" />
+          <img className='w-40 lg:w-50' src="/Assets/Logo.svg" alt="Logo" />
         </Link>
         <div className='hidden lg:flex justify-center items-center gap-2'>
           <div className='flex justify-center items-center gap-2 bg-white px-2 py-1 border border-stone-300 rounded-sm'>
@@ -33,18 +33,18 @@ const HeadBar: React.FC<HeadBarProps> = ({ onMenuClick, onSearchClick }) => {
                 } else {
                   alert('Please enter a search query');
                 }
-              }} className='bg-stone-900 hover:bg-stone-900 px-4 py-1 rounded-sm text-normal text-stone-50 active:scale-95 transition-all duration-300 cursor-pointer easeInOut'>Search</button>
+              }} className='bg-[#E41F66] hover:bg-[#c60b4d] px-4 py-1 rounded-sm text-normal text-stone-50 active:scale-95 transition-all duration-300 cursor-pointer easeInOut'>Search</button>
         </div>
         <div className='flex justify-center items-center gap-2.5'>
           <button onClick={onSearchClick} aria-label='Open search'>
             <IoSearch className='lg:hidden block size-6' />
           </button>
           <Link to="/wishlist" className='relative' aria-label='Wishlist count'>
-            <span className='-top-1 -right-1 absolute bg-stone-800 px-1 rounded-full text-[9px] text-stone-50'>{wishlistLength}</span>
+            <span className='-top-1 -right-1 absolute bg-[#E41F66] px-1 rounded-full text-[9px] text-stone-50'>{wishlistLength}</span>
             <FaRegHeart className='size-5 cursor-pointer' />
           </Link>
           <Link to="/cart" className='relative'>
-            <span className='-top-1 -right-1 absolute bg-stone-800 px-1 rounded-full text-[9px] text-stone-50'>{cartLength}</span>
+            <span className='-top-1 -right-1 absolute bg-[#E41F66] px-1 rounded-full text-[9px] text-stone-50'>{cartLength}</span>
             <FiShoppingCart className='size-5 cursor-pointer' />
           </Link>
           <UserDropdown />

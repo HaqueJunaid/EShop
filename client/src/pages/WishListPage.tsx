@@ -1,9 +1,14 @@
 import { Link } from 'react-router-dom'
-import { FaHeart } from 'react-icons/fa'
 import AddToCartButton from '../components/common/AddToCartButton'
 import { useWishlistStore } from '../store/wishlistStore'
+import { HeartIcon } from 'lucide-react'
+import { useEffect } from 'react'
 
 const WishListPage = () => {
+  useEffect(() => {
+    document.title = "VivahStore | Wishlist";
+  }, []);
+
   const wishlistItems = useWishlistStore((state) => state.wishlistItems)
   const removeWishlistItem = useWishlistStore((state) => state.removeWishlistItem)
   const clearWishlist = useWishlistStore((state) => state.clearWishlist)
@@ -23,8 +28,8 @@ const WishListPage = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-8">
           <div className="flex items-start gap-3">
-            <div className="rounded-full bg-red-100 p-3 text-red-600">
-              <FaHeart className="size-5" />
+            <div className="rounded-full bg-[#E41F66]/10 p-3 text-[#E41F66]">
+              <HeartIcon className="size-5" />
             </div>
             <div>
               <h1 className="font-bold text-stone-900 text-3xl">My Wishlist</h1>
@@ -49,7 +54,7 @@ const WishListPage = () => {
         </div>
 
         {wishlistItems.length === 0 ? (
-          <div className="p-10 border border-stone-200 rounded-3xl bg-white text-center">
+          <div className="p-10 border border-stone-200 rounded-lg bg-white text-center">
             <p className="text-stone-500">Your wishlist is empty. Add products from the catalog to save them here.</p>
           </div>
         ) : (

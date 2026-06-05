@@ -1,5 +1,5 @@
 import { Edit3, PackageSearch, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Demo product type
 interface Product {
@@ -39,6 +39,9 @@ const demoProducts: Product[] = [
 ];
 
 const Products = () => {
+  useEffect(() => {
+      document.title = "Admin | All Products"
+    }, [])
   const [products] = useState<Product[]>(demoProducts);
 
   return (

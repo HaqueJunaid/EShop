@@ -4,16 +4,20 @@ import { LuKeyRound } from "react-icons/lu";
 import { FiEye } from "react-icons/fi";
 import { FiEyeOff } from "react-icons/fi";
 import { Link } from 'react-router-dom';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form"
 
 type Inputs = {
-  username: string
-  email: string
-  password: string
+    username: string
+    email: string
+    password: string
 }
 
 const Register = () => {
+    useEffect(() => {
+        document.title = "VivahStore | Signup";
+    }, []);
+
     const {
         register,
         handleSubmit,
@@ -35,7 +39,7 @@ const Register = () => {
             <div className="w-full flex flex-col items-center justify-center">
 
                 <form onSubmit={handleSubmit(onSubmit)} className="md:w-96 w-80 flex flex-col items-center justify-center">
-                    <Link to="/"><img className='size-25' src="https://srishbish.com/cdn/shop/files/SRISHBISH_2_244x.png?v=1648184973" alt="Logo" /></Link>
+                    <Link to="/"><img className='w-50 mb-5' src="/Assets/Logo.svg" alt="Logo" /></Link>
 
                     <h2 className="text-4xl text-stone-900 font-medium">Sign up</h2>
                     <p className="text-sm text-stone-500/90 mt-3">Create an account to get started</p>
@@ -82,7 +86,7 @@ const Register = () => {
                         )}
                     </div>
 
-                    <button type="submit" className="mt-8 w-full h-11 rounded-full text-white bg-yellow-500 hover:scale-101 transition-all cursor-pointer">
+                    <button type="submit" className="mt-8 w-full h-11 rounded-full text-white bg-[#E41F66] hover:scale-101 transition-all cursor-pointer">
                         Sign up
                     </button>
                     <p className="text-stone-500/90 text-sm mt-4">Already have an account? <Link className="text-stone-700 hover:underline" to="/login">Sign In</Link></p>

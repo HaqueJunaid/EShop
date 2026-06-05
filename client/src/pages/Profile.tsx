@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import AddAddressForm from '../components/profile/AddAddressForm';
 import AddressPreview from '../components/profile/AddressPreview';
 import OrderTable from '../components/profile/OrderTable';
+import { WishList } from '../components/profile/WishList';
 
 const orders = [
     {
@@ -40,6 +41,10 @@ type Address = {
 };
 
 const Profile = () => {
+    useEffect(() => {
+        document.title = "VivahStore | Profile";
+    }, [])
+
     const [profileOption, setProfileOption] = useState("dashboard")
     const [showAddAddressForm, setShowAddAddressForm] = useState(false)
     const [addresses, setAddresses] = useState<Address[]>([]);
@@ -72,7 +77,7 @@ const Profile = () => {
                         <button className={`text-md tracking-wide text-start ${profileOption === "wishlist" && "font-semibold text-stone-950"}`} onClick={() => setProfileOption("wishlist")}>
                             Wishlist
                         </button>
-                        <button className={`text-md tracking-wide text-start ${profileOption === "logout" && "font-semibold text-stone-950"}`} onClick={() => setProfileOption("logout")}>
+                        <button className={`text-md tracking-wide text-start cursor-pointer hover:text-red-500 hover:opacity-100 transtion-all duration-300 ease-in-out`} >
                             Logout
                         </button>
                     </div>
@@ -87,22 +92,22 @@ const Profile = () => {
                             <table className='flex flex-col text-stone-600 text-lg'>
                                 <tbody>
                                     <tr className='block py-3'>
-                                    <td className='w-20 md:w-60 text-stone-950'>Name</td>
-                                    <td>Junaid Haque</td>
-                                </tr>
-                                <tr className='block py-3'>
-                                    <td className='w-20 md:w-60 text-stone-950'>Email</td>
-                                    <td>junaid.haque@example.com</td>
-                                </tr>
+                                        <td className='w-20 md:w-60 text-stone-950'>Name</td>
+                                        <td>Junaid Haque</td>
+                                    </tr>
+                                    <tr className='block py-3'>
+                                        <td className='w-20 md:w-60 text-stone-950'>Email</td>
+                                        <td>junaid.haque@example.com</td>
+                                    </tr>
                                 </tbody>
                             </table>
-                            <button onClick={() => setProfileOption("addresses")} className='bg-yellow-500 mt-10 px-6 py-3 rounded-lg text-sotne-950 hover:scale-103 transition-all duration-300 ease-in-out cursor-pointer'>View Addresses ({addresses.length})</button>
+                            <button onClick={() => setProfileOption("addresses")} className='bg-[#E41F66] mt-10 px-6 py-3 rounded-lg text-stone-50 hover:bg-[#c60b4d] transition-all duration-300 ease-in-out cursor-pointer'>View Addresses ({addresses.length})</button>
                         </div>
                     </div>)}
                     {profileOption === "addresses" && (
                         <div className='flex-3 py-5 text-left'>
                             <h1 className='mb-4 text-2xl'>Your Addresses ({addresses.length})</h1>
-                            <button onClick={() => setShowAddAddressForm(true)} type='submit' className='bg-yellow-500 px-6 py-3 rounded-lg text-semibold text-stone-950 hover:scale-103 transition-all duration-300 ease-in-out cursor-pointer'>Add a New Address</button>
+                            <button onClick={() => setShowAddAddressForm(true)} type='submit' className='bg-[#E41F66] px-6 py-3 rounded-lg text-semibold text-stone-50 hover:bg-[#c60b4d] transition-all duration-300 ease-in-out cursor-pointer'>Add a New Address</button>
                             {showAddAddressForm && <AddAddressForm addresses={addresses} setAddress={setAddresses} cancel={setShowAddAddressForm} />}
                             <div className='mt-0 md:mt-6'>
                                 {addresses.map((address, index) => (
@@ -123,7 +128,11 @@ const Profile = () => {
                             </div>
                         </div>
                     )}
-                    {profileOption === "wishlist" && (<h1>Wishlist</h1>)}
+                    {profileOption === "wishlist" && (
+                        <div className="flex-3 py-5 text-left">
+                            <WishList />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

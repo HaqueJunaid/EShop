@@ -79,8 +79,8 @@ const AddAddressForm = ({ cancel, setAddress, addresses }: AddAddressFormProps) 
                     {errors.phone && <p className='mt-1 text-red-500 text-xs'>{errors.phone.message}</p>}
                 </div>
                 <div className='flex space-x-4'>
-                    <button type='submit' className='bg-yellow-500 px-6 py-3 rounded-lg text-stone-950 hover:scale-103 transition-all duration-300 ease-in-out cursor-pointer'>Confirm</button>
-                    <button onClick={() => cancel((false))} type='button' className='bg-stone-300 px-6 py-3 rounded-lg text-black hover:scale-103 transition-all duration-300 ease-in-out cursor-pointer'>Cancel</button>
+                    <button type='submit' className='bg-[#E41F66] px-6 py-3 rounded-lg text-stone-50 hover:bg-[#c60b4d] transition-all duration-300 ease-in-out cursor-pointer'>Confirm</button>
+                    <button onClick={() => cancel((false))} type='button' className='bg-stone-300 px-6 py-3 rounded-lg text-black hover:bg-stone-400/50 transition-all duration-300 ease-in-out cursor-pointer'>Cancel</button>
                 </div>
             </form>
         </div>

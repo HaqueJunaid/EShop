@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import Badge from '../common/badge'
-import { MdArrowBack, MdLocationOn, MdPayment} from 'react-icons/md'
+import { MdArrowBack, MdLocationOn, MdPayment } from 'react-icons/md'
+import { useEffect } from 'react'
 
 // Mock detailed order data
 const mockOrders: { [key: number]: any } = {
@@ -78,6 +79,10 @@ const mockOrders: { [key: number]: any } = {
 }
 
 const OrderDetail = () => {
+  useEffect(() => {
+    document.title = "VivahStore | My Orders"
+  }, [])
+
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const orderId = parseInt(id || '0')
@@ -90,9 +95,9 @@ const OrderDetail = () => {
           <div className='py-20 text-center'>
             <h1 className='mb-4 font-bold text-stone-900 text-2xl'>Order Not Found</h1>
             <p className='mb-6 text-stone-600'>The order you're looking for doesn't exist.</p>
-            <button 
+            <button
               onClick={() => navigate('/profile')}
-              className='bg-yellow-500 px-6 py-3 rounded-lg text-stone-950 hover:scale-103 transition-all duration-300 ease-in-out cursor-pointer'
+              className='bg-[#E41F66] px-6 py-3 rounded-lg text-stone-950 hover:scale-103 transition-all duration-300 ease-in-out cursor-pointer'
             >
               Back to Profile
             </button>
@@ -108,7 +113,7 @@ const OrderDetail = () => {
         {/* Header */}
         <div className='flex justify-between items-center mb-8'>
           <div className='flex items-center gap-4'>
-            <button 
+            <button
               onClick={() => navigate('/profile')}
               className='flex items-center gap-2 text-stone-600 hover:text-stone-900 transition-colors'
             >
@@ -118,9 +123,9 @@ const OrderDetail = () => {
             <div className='bg-stone-300 w-px h-6'></div>
             <h1 className='font-bold text-stone-900 text-2xl'>Order #{order.orderId}</h1>
           </div>
-          <Badge 
-            text={order.status === 'delivered' ? 'Delivered' : 'Pending'} 
-            variant={order.status === 'delivered' ? 'delivered' : 'pending'} 
+          <Badge
+            text={order.status === 'delivered' ? 'Delivered' : 'Pending'}
+            variant={order.status === 'delivered' ? 'delivered' : 'pending'}
           />
         </div>
 
@@ -133,7 +138,7 @@ const OrderDetail = () => {
               <div className='space-y-4'>
                 <div className='flex justify-between items-center'>
                   <div className='flex items-center gap-3'>
-                    <div className={`w-3 h-3 rounded-full ${order.status === 'delivered' ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                    <div className={`w-3 h-3 rounded-full ${order.status === 'delivered' ? 'bg-green-500' : 'bg-[#E41F66]'}`}></div>
                     <span className='text-stone-700'>
                       {order.status === 'delivered' ? 'Delivered' : 'Processing'}
                     </span>
@@ -232,11 +237,10 @@ const OrderDetail = () => {
                 </div>
                 <div className='flex justify-between text-stone-700'>
                   <span>Status</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    order.paymentStatus === 'paid' 
-                      ? 'bg-green-100 text-green-700' 
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${order.paymentStatus === 'paid'
+                      ? 'bg-green-100 text-green-700'
                       : 'bg-yellow-100 text-yellow-700'
-                  }`}>
+                    }`}>
                     {order.paymentStatus === 'paid' ? 'Paid' : 'Pending'}
                   </span>
                 </div>
@@ -247,7 +251,7 @@ const OrderDetail = () => {
             <div className='bg-white shadow-sm p-6 rounded-lg'>
               <h2 className='mb-4 font-semibold text-stone-900 text-lg'>Actions</h2>
               <div className='space-y-3'>
-                <button className='bg-yellow-500 px-4 py-2 rounded-lg w-full text-stone-950 hover:scale-103 transition-all duration-300 ease-in-out cursor-pointer'>
+                <button className='bg-[#E41F66] px-4 py-2 rounded-lg w-full text-stone-950 hover:scale-103 transition-all duration-300 ease-in-out cursor-pointer'>
                   Track Order
                 </button>
                 {order.status === 'delivered' && (

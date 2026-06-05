@@ -5,7 +5,7 @@ const NotFound = () => {
     return (
         <div className="min-h-screen flex items-center justify-center flex-col bg-linear-to-br from-stone-50 via-white to-stone-100 text-stone-900 py-4 gap-5">
             <Link className='lg:absolute lg:left-1/2 lg:top-6 lg:-translate-x-1/2' to="/">
-                <img className='size-20 lg:size-30' src="https://srishbish.com/cdn/shop/files/SRISHBISH_2_244x.png?v=1648184973" alt="Logo" />
+                <img className='size-20 lg:size-30' src="/Assets/Logo.svg" alt="Logo" />
             </Link>
             <div className="container mx-auto px-4">
                 <div className="mx-auto max-w-4xl rounded-[40px] border border-stone-200 bg-white/90 p-10 shadow-xl shadow-stone-200/60 backdrop-blur-sm">

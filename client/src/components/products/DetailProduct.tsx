@@ -1,9 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ProductGallary from './ProductGallary.tsx'
 import ProductContent from './ProductContent.tsx'
 import SimilarProducts from './SimilarProducts.tsx'
 
 const DetailProduct: React.FC = () => {
+    useEffect(() => {
+        document.title = "VivahStore | Product Details";
+    }, []);
+    
     const [selectedVariant, setSelectedVariant] = useState(0)
     const [selectedImage, setSelectedImage] = useState(0)
 

@@ -1,5 +1,5 @@
 import { Eye, SearchIcon, Users2 } from "lucide-react"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type User = {
   id: string;
@@ -59,6 +59,9 @@ const mockUsers: User[] = [
 ];
 
 const Users = () => {
+  useEffect(() => {
+    document.title = "Admin | All Users"
+  }, [])
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [searchQuery, setSearchQuery] = useState("");
 

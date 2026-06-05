@@ -30,11 +30,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <div className='relative'>
       <div className={'w-full h-50 md:h-80'}>
         <Link to={`/products/${id}/details`} className='bg-stone-100 w-full h-full aspect-square overflow-hidden'>
-          <img src={imageUrl} alt={title} className='rounded-md w-full h-full object-cover' loading='lazy' />
+          <img src={imageUrl} alt={title} className='rounded-md w-full h-full object-cover hover:opacity-80 transition-all duration-300 ease-in-out' loading='lazy' />
         </Link>
       </div>
 
-      {inStock ? null : <p className='top-0 right-0 z-10 absolute bg-yellow-500 px-2 py-1 rounded-bl-xl text-xs sm:text-sm'>Out of Stock</p>}
+      {inStock ? null : <p className='top-0 right-0 z-10 absolute bg-[#E41F66] text-stone-50 px-2 py-1 rounded-bl-xl text-xs sm:text-sm'>Out of Stock</p>}
       <div className={'pt-4 relative'}>
         <p className='overflow-hidden text-md text-stone-900 line-clamp-2 whitespace-nowrap' style={{ textOverflow: 'ellipsis' }}>{title}</p>
         <p className='mt-1 text-stone-500 text-xs sm:text-sm'>₹{formattedPrice}</p>

@@ -58,7 +58,7 @@ const MobileSearchPopup: React.FC<MobileSearchPopupProps> = ({ open, onClose }) 
             />
 
             <button
-              className='bg-stone-800 hover:bg-stone-900 mt-3 px-4 py-2 rounded-sm w-full text-stone-50 text-sm transition-all duration-300 cursor-pointer'
+              className='bg-[#E41F66] hover:bg-[#c60b4d] transition-all ease-in-out duration-300 mt-3 px-4 py-2 rounded-sm w-full text-stone-50 text-sm cursor-pointer'
               onClick={() => {
                 navigate(`/products/${query}`);
                 onClose();

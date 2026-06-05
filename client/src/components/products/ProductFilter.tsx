@@ -44,7 +44,7 @@ const ProductFilterSideBar: React.FC = () => {
                     <div className="mt-2">
                         <label className="inline-flex relative items-center gap-3 text-gray-900 cursor-pointer">
                             <input type="checkbox" className="sr-only peer" checked={inStock} onChange={handleStockChange} />
-                            <div className={`peer ${inStock ? 'bg-[#FCB435]' : 'bg-stone-300'} rounded-full w-10 h-6 transition-colors duration-200`}></div>
+                            <div className={`peer ${inStock ? 'bg-[#E41F66]' : 'bg-stone-300'} rounded-full w-10 h-6 transition-colors duration-200`}></div>
                             <span className="top-1 left-1 absolute bg-white rounded-full w-4 h-4 transition-transform peer-checked:translate-x-4 duration-200 ease-in-out dot"></span>
                             In Stock
                         </label>

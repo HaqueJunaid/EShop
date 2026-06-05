@@ -2,8 +2,13 @@ import React from 'react'
 import Heading from '../components/common/Heading'
 import { RefreshCcw, CreditCard } from 'lucide-react'
 import FaqDropDown from '../components/common/FaqDropDown'
+import { useEffect } from 'react'
 
 const Faqs: React.FC = () => {
+    useEffect(() => {
+        document.title = "VivahStore | FAQs";
+    }, []);
+
     const faqs1 = [
         {
             question: "Is my Order Confirmed?",
@@ -91,7 +96,7 @@ const Faqs: React.FC = () => {
                 <div className='flex md:flex-row flex-col md:justify-between md:items-center gap-4 md:gap-10 mx-auto py-4 w-full max-w-6xl text-stone-700 text-xs px-4 md:px-20'>
                     <div className='flex items-start gap-3'>
                         <span className='inline-flex justify-center items-center mt-0.5 text-stone-700'>
-                            <RefreshCcw size={16} />
+                            <RefreshCcw size={16} className='text-[#E41F66]' />
                         </span>
                         <p>
                             <span className='font-semibold text-stone-900'>Returns &amp; Refunds.</span>{' '}
@@ -103,7 +108,7 @@ const Faqs: React.FC = () => {
 
                     <div className='flex items-start gap-3'>
                         <span className='inline-flex justify-center items-center mt-0.5 text-stone-700'>
-                            <CreditCard size={16} />
+                            <CreditCard size={16} className='text-[#E41F66]' />
                         </span>
                         <p>
                             <span className='font-semibold text-stone-900'>Payment Methods.</span>{' '}

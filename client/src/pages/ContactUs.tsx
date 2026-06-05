@@ -1,7 +1,12 @@
 import React from 'react'
 import Heading from '../components/common/Heading'
+import { useEffect } from 'react'
 
 const ContactUs: React.FC = () => {
+  useEffect(() => {
+    document.title = "VivahStore | Contact";
+  }, []);
+
   return (
     <div className='bg-stone-50 py-8 pb-14 w-full'>
       <div className='px-6'>
@@ -96,7 +101,7 @@ const ContactUs: React.FC = () => {
 
               <button
                 type='submit'
-                className='inline-flex items-center gap-2 bg-stone-800 hover:bg-stone-900 px-6 py-2.5 rounded-md text-white text-xs tracking-wide cursor-pointer'
+                className='inline-flex items-center gap-2 bg-[#E41F66] hover:bg-[#c60b4d] transition-all ease-in-out duration-300 px-6 py-2 rounded-md text-white text-sm tracking-wide cursor-pointer'
               >
                 Submit
               </button>

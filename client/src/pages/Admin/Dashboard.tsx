@@ -1,6 +1,11 @@
 import { Gauge, ShoppingCart, DollarSign, Box } from "lucide-react";
+import { useEffect } from "react";
 
 const Dashboard = () => {
+  useEffect(() => {
+    document.title = "Admin | Dashboard"
+  }, [])
+
   return (
     <div className="p-5 w-full min-h-screen">
       <div className="flex items-center justify-start gap-2 text-stone-900 mb-6">

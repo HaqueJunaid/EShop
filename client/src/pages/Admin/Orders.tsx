@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, SearchIcon, ShoppingCartIcon } from "lucide-react";
 
 type OrderItem = {
@@ -42,9 +42,23 @@ const mockOrders: Order[] = [
 ];
 
 const Orders = () => {
+  useEffect(() => {
+    document.title = "Admin | All Orders"
+  }, [])
   const [orders, setOrders] = useState<Order[]>(mockOrders);
   const [isDetailOn, setIsDetailOn] = useState(false);
   const [filteredProduct, setFilteredProduct] = useState<Order | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredOrders = orders.filter((o) => {
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      o.id.toLowerCase().includes(searchLower) ||
+      o.status.toLowerCase().includes(searchLower) ||
+      o.date.toLowerCase().includes(searchLower) ||
+      o.items.some((it) => it.name.toLowerCase().includes(searchLower))
+    );
+  });
 
   const handleDetailToggle = (orderId: string | null) => {
     setIsDetailOn((prev) => !prev);
@@ -70,6 +84,8 @@ const Orders = () => {
             className="w-[200px] rounded-full border border-stone-200 bg-stone-100 px-3 py-2 text-sm text-stone-700 focus:outline-2 focus:outline-stone-900"
             type="text"
             placeholder="Search"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQuery}
           />
           <button className="rounded-full bg-stone-900 px-3 py-2 text-sm text-stone-50 border-2 border-stone-900 focus:outline-stone-200 flex items-center justify-center gap-2" type="button">
             <SearchIcon size={20} /> Search
@@ -92,7 +108,7 @@ const Orders = () => {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <tr key={order.id} className="rounded-3xl overflow-hidden border border-stone-100 bg-white transition">
                 <td className="px-5 py-5 align-top">
                   <div className="font-semibold text-stone-900">{order.id}</div>
@@ -141,7 +157,7 @@ const Orders = () => {
 
       {/* Card view for mobile */}
       <div className="block md:hidden space-y-5">
-        {orders.map((order) => (
+        {filteredOrders.map((order) => (
           <div key={order.id} className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-stone-900">{order.id}</span>

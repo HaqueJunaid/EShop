@@ -2,8 +2,13 @@ import { ShoppingCart } from 'lucide-react'
 import OrderSummary from '../components/cart/OrderSummary'
 import Cartitem from '../components/cart/Cartitem'
 import { useCartStore } from '../store/cartStore'
+import { useEffect } from 'react'
 
 const CartPage = () => {
+    useEffect(() => {
+        document.title = "VivahStore | Cart";
+    }, []);
+
     const cartItems = useCartStore((state) => state.cartItems)
     const updateCartItemQuantity = useCartStore((state) => state.updateCartItemQuantity)
 
@@ -22,7 +27,7 @@ const CartPage = () => {
             <div className="mx-auto px-4 py-8 container">
                 {/* Header */}
                 <div className="flex items-start gap-3 mb-8">
-                    <div className="rounded-full bg-red-100 p-3 text-red-600">
+                    <div className="rounded-full bg-[#E41F66]/10 p-3 text-[#E41F66]">
                         <ShoppingCart className="size-5" />
                     </div>
                     <div>
@@ -37,7 +42,7 @@ const CartPage = () => {
                     {/* Cart Items */}
                     <div className="lg:col-span-2">
                         {cartItems.length === 0 ? (
-                            <div className="p-10 border border-stone-200 rounded-3xl bg-white text-center">
+                            <div className="p-10 border border-stone-200 rounded-lg bg-white text-center">
                                 <p className="text-stone-500">Your cart is empty</p>
                             </div>
                         ) : (

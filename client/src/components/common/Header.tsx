@@ -7,12 +7,23 @@ import Navbar from './Navbar'
 import { LuUserRound } from "react-icons/lu";
 import { HiLogin } from "react-icons/hi";
 import { FiUserPlus } from "react-icons/fi";
-import { IoIosArrowUp } from "react-icons/io";
+import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+import { navigationDropdown } from '../../constants/navigation';
+
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
   const [isOpen, setIsOpen] = useState(false);
+  const [isShopWeddingOpen, setIsShopWeddingOpen] = useState(false)
+  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({})
+
+  const toggleCategory = (url: string) => {
+    setOpenCategories(prev => ({
+      ...prev,
+      [url]: !prev[url]
+    }))
+  }
 
   useEffect(() => {
     if (!isMobileMenuOpen) return
@@ -33,14 +44,15 @@ const Header: React.FC = () => {
 
       <MobileSearchPopup open={isMobileSearchOpen} onClose={() => setIsMobileSearchOpen(false)} />
 
+
       <div
         className={`lg:hidden fixed inset-0 z-50 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setIsMobileMenuOpen(false)}
         aria-hidden={!isMobileMenuOpen}
       >
-        <div className='absolute inset-0 bg-black/40' />
+        <div className='absolute w-full h-screen inset-0 bg-black/40' />
         <aside
-          className={`absolute top-0 right-0 h-full w-4/5 max-w-xs bg-stone-50 shadow-xl transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`absolute top-0 right-0 h-screen w-4/5 max-w-xs bg-stone-50 shadow-xl transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
           onClick={(e) => e.stopPropagation()}
           role='dialog'
           aria-modal='true'
@@ -60,9 +72,67 @@ const Header: React.FC = () => {
             <Link className='py-3 border-stone-100 border-b' to='/' onClick={() => setIsMobileMenuOpen(false)}>
               Home
             </Link>
-            <Link className='py-3 border-stone-100 border-b' to='/shop-wedding' onClick={() => setIsMobileMenuOpen(false)}>
-              Shop Wedding
-            </Link>
+            <div className="border-stone-100 border-b py-3 flex flex-col">
+              <button
+                className="flex justify-between items-center w-full text-stone-800 text-left font-normal cursor-pointer select-none"
+                onClick={() => setIsShopWeddingOpen(!isShopWeddingOpen)}
+              >
+                <span>Shop Wedding</span>
+                <IoIosArrowDown className={`size-4 text-stone-500 transition-transform duration-300 ${isShopWeddingOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <div className={`grid transition-all duration-300 ease-in-out ${isShopWeddingOpen ? 'grid-rows-[1fr] opacity-100 mt-2' : 'grid-rows-[0fr] opacity-0 pointer-events-none'}`}>
+                <div className="overflow-hidden flex flex-col pl-4 gap-1">
+                  {navigationDropdown.map((item) => {
+                    const hasSubItems = item.baseItems && item.baseItems.length > 0;
+                    const isCatOpen = openCategories[item.url] || false;
+
+                    return (
+                      <div key={item.url} className="flex flex-col py-1.5 border-b border-stone-100/50 last:border-b-0">
+                        <div className="flex justify-between items-center w-full">
+                          <Link
+                            to={`/products/${item.url}`}
+                            className="text-stone-600 hover:text-stone-900 transition-colors text-sm font-medium"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            {item.title}
+                          </Link>
+                          {hasSubItems && (
+                            <button
+                              className="p-1 hover:bg-stone-200/50 rounded-full transition-colors cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleCategory(item.url);
+                              }}
+                              aria-label={`Toggle ${item.title} sub-menu`}
+                            >
+                              <IoIosArrowDown className={`size-3.5 text-stone-400 transition-transform duration-200 ${isCatOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                          )}
+                        </div>
+
+                        {hasSubItems && (
+                          <div className={`grid transition-all duration-200 ease-in-out ${isCatOpen ? 'grid-rows-[1fr] opacity-100 mt-1.5' : 'grid-rows-[0fr] opacity-0 pointer-events-none'}`}>
+                            <div className="overflow-hidden flex flex-col pl-3.5 gap-2 border-l border-stone-200">
+                              {item.baseItems?.map((baseItem) => (
+                                <Link
+                                  key={baseItem.url}
+                                  to={`/products/${baseItem.url}`}
+                                  className="text-stone-500 hover:text-stone-800 text-xs py-0.5 transition-colors"
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                  {baseItem.title}
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
             <Link className='py-3 border-stone-100 border-b' to='/faqs' onClick={() => setIsMobileMenuOpen(false)}>
               FAQs
             </Link>

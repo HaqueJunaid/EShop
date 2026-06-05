@@ -3,8 +3,8 @@ import type { OrderSummaryProps } from "../../types/allTypes";
 
 const OrderSummary = ({ subtotal }: OrderSummaryProps) => {
     return (
-        <div className="lg:col-span-1">
-            <div className="top-8 sticky p-6 border border-stone-200 rounded-lg">
+        <div className="lg:col-span-1 ">
+            <div className="top-8 sticky p-6 border border-stone-200 bg-white rounded-lg">
                 <h2 className="mb-6 font-bold text-xl">Total</h2>
 
                 <div className="space-y-4 mb-6">

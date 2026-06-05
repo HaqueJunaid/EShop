@@ -48,7 +48,7 @@ const AddToCartButton = ({ product }: { product: Product }) => {
                 }}
                 disabled={!product.id}
             >
-                <ShoppingBag className={`${isInCart ? 'text-stone-950' : 'text-stone-50 opacity-0 absolute'} left-15 size-4 group-hover:inline-block group-hover:opacity-100 transition-all druation-300 ease-in-out`} />
+                <ShoppingBag className={`${isInCart ? 'text-stone-950' : 'text-stone-50 opacity-0'} hidden size-4 group-hover:inline-block group-hover:opacity-100 transition-all druation-300 ease-in-out`} />
                 {isInCart ? 'ADDED' : 'ADD TO CART'}
             </button>
         </>

@@ -50,8 +50,8 @@ const AddToWishListButton = ({ id, title, price, imageUrl }: { id: string, title
         }
     }
     return (
-        <button type='button' className='text-stone-800 cursor-pointer' onClick={toggleWishlist} aria-label='Wishlist'>
-            {isAddedToWishList ? <FaHeart className='size-6 sm:size-8 text-red-500' /> : <FaRegHeart className='size-6 sm:size-8 text-stone-900' />}
+        <button type='button' className='text-stone-800 cursor-pointer group' onClick={toggleWishlist} aria-label='Wishlist'>
+            {isAddedToWishList ? <FaHeart className='size-6 sm:size-8 text-[#E41F66] group-hover:scale-110 transition-all duration-300 ease-in-out' /> : <FaRegHeart className='size-6 sm:size-8 text-stone-900 group-hover:scale-110 transition-all duration-300 ease-in-out' />}
         </button>
     )
 }
