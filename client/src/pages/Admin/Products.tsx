@@ -1,6 +1,5 @@
 import { Edit3, PackageSearch, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
 import ProductAddForm from "./ProductAddForm";
 
 // Demo product type
@@ -50,23 +49,16 @@ const Products = () => {
   }, [])
   const [products, setProducts] = useState<Product[]>(demoProducts);
   const [isOpen, setIsOpen] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<Product | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setError,
-    formState: { errors },
-  } = useForm<Product>();
-
-  const onSubmit: SubmitHandler<Product> = (data) => {
-    if (products.some((p) => p.id.toLowerCase() === data.id.toLowerCase())) {
-      setError("id", { type: "manual", message: "Product ID must be unique" });
-      return;
+  const handleSaveProduct = (product: Product) => {
+    if (productToEdit) {
+      setProducts((prev) => prev.map((p) => (p.id === product.id ? product : p)));
+    } else {
+      setProducts((prev) => [...prev, product]);
     }
-    setProducts((prev) => [...prev, data]);
     setIsOpen(false);
-    reset();
+    setProductToEdit(null);
   };
 
   return (
@@ -77,8 +69,11 @@ const Products = () => {
           <h1 className="text-2xl font-medium">All Products</h1>
         </div>
         <button
-          onClick={() => setIsOpen(true)}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-stone-950 text-stone-50 rounded-md hover:scale-95 transition-all duration-300 ease-in-out cursor-pointer"
+          onClick={() => {
+            setProductToEdit(null);
+            setIsOpen(true);
+          }}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-stone-900 text-stone-50 rounded-md hover:scale-95 transition-all duration-300 ease-in-out cursor-pointer"
         >
           <Plus size={25} /> Add Product
         </button>
@@ -109,11 +104,24 @@ const Products = () => {
               <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between md:justify-start gap-3 w-full md:w-fit">
                 <span className="text-xl font-bold text-stone-900">${product.price.toLocaleString()}</span>
                 <div className="flex items-center gap-2">
-                  <button className="flex items-center gap-2 border border-green-500 bg-green-50 text-green-500 px-3 rounded-md py-1.5 text-sm font-medium hover:bg-green-100">
+                  <button 
+                    onClick={() => {
+                      setProductToEdit(product);
+                      setIsOpen(true);
+                    }}
+                    className="flex items-center gap-2 border border-green-500 bg-green-50 text-green-500 px-3 rounded-md py-1.5 text-sm font-medium hover:bg-green-100 cursor-pointer"
+                  >
                     <Edit3 size={18} />
                     Edit
                   </button>
-                  <button className="flex items-center gap-2 border border-red-500 bg-red-50 text-red-500 px-3 rounded-md py-1.5 text-sm font-medium hover:bg-red-100">
+                  <button 
+                    onClick={() => {
+                      if (confirm(`Are you sure you want to delete ${product.title}?`)) {
+                        setProducts((prev) => prev.filter((p) => p.id !== product.id));
+                      }
+                    }}
+                    className="flex items-center gap-2 border border-red-500 bg-red-50 text-red-500 px-3 rounded-md py-1.5 text-sm font-medium hover:bg-red-100 cursor-pointer"
+                  >
                     <Trash2 size={18} />
                     Delete
                   </button>
@@ -136,12 +144,16 @@ const Products = () => {
         </div>
       </div>
 
-      {/* Add Product Modal */}
+      {/* Add/Edit Product Modal */}
       {isOpen && <ProductAddForm
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onAddProduct={onSubmit}
+        onClose={() => {
+          setIsOpen(false);
+          setProductToEdit(null);
+        }}
+        onAddProduct={handleSaveProduct}
         existingIds={products.map((p) => p.id)}
+        productToEdit={productToEdit}
       />}
     </div>
   );

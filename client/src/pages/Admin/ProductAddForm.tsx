@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { X } from "lucide-react";
 
@@ -17,6 +17,7 @@ interface ProductAddFormProps {
   onClose: () => void;
   onAddProduct: (product: Product) => void;
   existingIds: string[];
+  productToEdit?: Product | null;
 }
 
 const ProductAddForm: React.FC<ProductAddFormProps> = ({
@@ -24,14 +25,32 @@ const ProductAddForm: React.FC<ProductAddFormProps> = ({
   onClose,
   onAddProduct,
   existingIds,
+  productToEdit,
 }) => {
   const {
     register,
     handleSubmit,
     reset,
-    setError,
     formState: { errors },
   } = useForm<Product>();
+
+  useEffect(() => {
+    if (isOpen) {
+      if (productToEdit) {
+        reset(productToEdit);
+      } else {
+        reset({
+          id: "",
+          title: "",
+          description: "",
+          quantity: 0,
+          price: 0,
+          imageUrl: "",
+          category: "",
+        });
+      }
+    }
+  }, [isOpen, productToEdit, reset]);
 
   const generateNextId = (ids: string[]) => {
     const numericIds = ids
@@ -46,11 +65,15 @@ const ProductAddForm: React.FC<ProductAddFormProps> = ({
   };
 
   const onSubmit: SubmitHandler<Product> = (data) => {
-    const nextId = generateNextId(existingIds);
-    onAddProduct({
-      ...data,
-      id: nextId,
-    });
+    if (productToEdit) {
+      onAddProduct(data);
+    } else {
+      const nextId = generateNextId(existingIds);
+      onAddProduct({
+        ...data,
+        id: nextId,
+      });
+    }
     reset();
     onClose();
   };
@@ -68,7 +91,9 @@ const ProductAddForm: React.FC<ProductAddFormProps> = ({
       />
       <div className="relative z-10 w-full max-w-lg overflow-y-auto max-h-[90vh] rounded-3xl border border-stone-200 bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between pb-4 border-b border-stone-100">
-          <h2 className="text-xl font-semibold text-stone-900">Add New Product</h2>
+          <h2 className="text-xl font-semibold text-stone-900">
+            {productToEdit ? "Edit Product" : "Add New Product"}
+          </h2>
           <button 
             type="button" 
             onClick={() => {
@@ -173,7 +198,7 @@ const ProductAddForm: React.FC<ProductAddFormProps> = ({
               type="submit"
               className="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-sm font-medium text-white transition cursor-pointer"
             >
-              Add Product
+              {productToEdit ? "Save Changes" : "Add Product"}
             </button>
           </div>
         </form>
