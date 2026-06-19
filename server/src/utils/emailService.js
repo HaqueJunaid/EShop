@@ -85,13 +85,13 @@ const emailTemplates = {
                     text-align: center;
                 }
                 .header h1 {
-                    color: #ff44b1;
+                    color: #e41f66;
                     margin: 0;
                     font-size: 40px;
                     weight: 700;
                 }
                 .header h4 {
-                    color: #333333;
+                    color: #e41f66;
                     margin: 0;
                     font-size: 16px;
                     weight: 300;
@@ -103,7 +103,7 @@ const emailTemplates = {
                     margin-bottom: 30px;
                 }
                 .otp-box {
-                    background-color: #f0f0f0;
+                    background-color: #ee7d9a;
                     padding: 20px;
                     border-radius: 8px;
                     text-align: center;
@@ -112,7 +112,7 @@ const emailTemplates = {
                 .otp-code {
                     font-size: 32px;
                     font-weight: bold;
-                    color: #2196F3;
+                    color: #e41f66;
                     letter-spacing: 5px;
                     font-family: 'Courier New', monospace;
                 }
