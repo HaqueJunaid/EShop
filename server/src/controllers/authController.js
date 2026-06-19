@@ -1,20 +1,8 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
-import { config } from '../config/config.js';
 import { sendOTPEmail, sendWelcomeEmail } from '../utils/emailService.js';
-
-// Generate OTP
-const generateOTP = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
-// Generate JWT Token
-const generateToken = (id) => {
-    return jwt.sign({ id }, config.jwt.secret, {
-        expiresIn: config.jwt.expire,
-    });
-};
+import { generateToken, setTokenCookie, clearTokenCookie } from '../utils/tokenService.js';
+import { generateOTP, getOTPExpireTime, isOTPExpired } from '../utils/otpService.js';
 
 // Register User
 export const register = async (req, res) => {
@@ -43,7 +31,7 @@ export const register = async (req, res) => {
 
         // Generate OTP
         const otp = generateOTP();
-        const otpExpire = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+        const otpExpire = getOTPExpireTime();
 
         // Create user
         const user = await User.create({
@@ -52,6 +40,7 @@ export const register = async (req, res) => {
             password: hashedPassword,
             otp,
             otpExpire,
+            role: 'user',
         });
 
         // Send OTP email
@@ -95,7 +84,7 @@ export const verifyOTP = async (req, res) => {
         }
 
         // Check if OTP is expired
-        if (new Date() > user.otpExpire) {
+        if (isOTPExpired(user.otpExpire)) {
             return res.status(400).json({
                 success: false,
                 message: 'OTP has expired. Please request a new one.',
@@ -120,14 +109,9 @@ export const verifyOTP = async (req, res) => {
         await sendWelcomeEmail(user.email, user.name);
 
         // Generate token
-        const token = generateToken(user._id);
+        const token = generateToken(user._id, user.role);
 
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: config.env === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        });
+        setTokenCookie(res, token);
 
         res.status(200).json({
             success: true,
@@ -138,6 +122,7 @@ export const verifyOTP = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 isVerified: user.isVerified,
+                role: user.role,
             },
         });
     } catch (error) {
@@ -191,14 +176,9 @@ export const login = async (req, res) => {
         }
 
         // Generate token
-        const token = generateToken(user._id);
+        const token = generateToken(user._id, user.role);
 
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: config.env === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        });
+        setTokenCookie(res, token);
 
         res.status(200).json({
             success: true,
@@ -209,6 +189,7 @@ export const login = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 isVerified: user.isVerified,
+                role: user.role,
             },
         });
     } catch (error) {
@@ -248,6 +229,7 @@ export const getCurrentUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 isVerified: user.isVerified,
+                role: user.role,
                 createdAt: user.createdAt,
             },
         });
@@ -290,7 +272,7 @@ export const resendOTP = async (req, res) => {
 
         // Generate new OTP
         const otp = generateOTP();
-        const otpExpire = new Date(Date.now() + 10 * 60 * 1000);
+        const otpExpire = getOTPExpireTime();
 
         user.otp = otp;
         user.otpExpire = otpExpire;

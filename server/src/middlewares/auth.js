@@ -1,9 +1,8 @@
-import jwt from 'jsonwebtoken';
-import { config } from '../config/config.js';
+import { verifyToken, extractToken } from '../utils/tokenService.js';
 
 export const protect = (req, res, next) => {
     try {
-        const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+        const token = extractToken(req);
 
         if (!token) {
             return res.status(401).json({
@@ -13,7 +12,7 @@ export const protect = (req, res, next) => {
         }
 
         // Verify token
-        const decoded = jwt.verify(token, config.jwt.secret);
+        const decoded = verifyToken(token);
         req.user = decoded;
         next();
     } catch (error) {
@@ -25,12 +24,22 @@ export const protect = (req, res, next) => {
     }
 };
 
+export const admin = (req, res, next) => {
+    if (!req.user?.role || req.user.role !== 'admin') {
+        return res.status(403).json({
+            success: false,
+            message: 'Admin access required',
+        });
+    }
+    next();
+};
+
 export const optional = (req, res, next) => {
     try {
-        const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+        const token = extractToken(req);
 
         if (token) {
-            const decoded = jwt.verify(token, config.jwt.secret);
+            const decoded = verifyToken(token);
             req.user = decoded;
         }
         next();
