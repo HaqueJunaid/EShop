@@ -143,7 +143,7 @@ const Header: React.FC = () => {
               Contact Us
             </Link>
           </nav>
-          <div className='bottom-0 left-0 z-110 absolute flex justify-between items-center px-4.5 py-4 border-stone-300 border-t w-full text-stone-800'>
+          <div className='bottom-0 left-0 z-110 absolute flex justify-between items-center px-4.5 py-4 bg-stone-50 border-stone-300 border-t w-full text-stone-800'>
             <Link to={`/profile`} onClick={() => setIsMobileMenuOpen(false)} className='flex items-center gap-2'>
               <div className='flex justify-center items-center bg-stone-200/80 border-2 border-stone-300 rounded-full size-10'>
                 <LuUserRound className='size-6' />
@@ -153,7 +153,7 @@ const Header: React.FC = () => {
             <IoIosArrowUp className={`size-5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} onClick={() => { setIsOpen(!isOpen) }} />
           </div>
           {/* Profile dropdown, always overlays above menu and is fully visible */}
-          <div className={`w-full max-w-xs bg-stone-50 absolute left-0 transition-all duration-300 z-50 ${isOpen ? 'bottom-16 opacity-100 pointer-events-auto' : 'bottom-0 opacity-0 pointer-events-none'}`} style={{ boxShadow: isOpen ? '0 8px 32px rgba(0,0,0,0.10)' : 'none' }}>
+          <div className={`w-full px-3 max-w-xs bg-stone-50 absolute left-0 transition-all duration-300 z-50 ${isOpen ? 'bottom-21 opacity-100 pointer-events-auto' : 'bottom-0 opacity-0 pointer-events-none'}`} style={{ boxShadow: isOpen ? '0 8px 32px rgba(0,0,0,0.10)' : 'none' }}>
             <div className='block z-100 relative hover:bg-stone-50 mb-1 p-2 py-3 border border-stone-300 rounded-md w-full text-sm text-nowrap'>
               <Link to={`/register`} className='flex items-center gap-1 px-2 py-0.5 rounded-sm cursor-pointer'>
                 <FiUserPlus className="size-5" /> Sign Up
