@@ -3,7 +3,7 @@ import { MdOutlineAlternateEmail } from "react-icons/md";
 import { LuKeyRound } from "react-icons/lu";
 import { FiEye } from "react-icons/fi";
 import { FiEyeOff } from "react-icons/fi";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form"
 
@@ -14,6 +14,8 @@ type Inputs = {
 }
 
 const Register = () => {
+    const navigate = useNavigate();
+    
     useEffect(() => {
         document.title = "VivahStore | Signup";
     }, []);
@@ -27,7 +29,10 @@ const Register = () => {
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
-    const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data)
+    const onSubmit: SubmitHandler<Inputs> = (data) => {
+        // Redirect to verify OTP page with email
+        navigate("/verify-otp", { state: { email: data.email } });
+    }
 
     return (
         <div className="flex h-screen w-full bg-stone-50 relative">

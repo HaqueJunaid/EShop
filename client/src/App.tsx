@@ -10,6 +10,7 @@ import DetailProduct from './components/products/DetailProduct.tsx'
 import CartPage from './pages/CartPage.tsx'
 import Register from './pages/Register.tsx'
 import Login from './pages/Login.tsx'
+import VerifyOTP from './pages/VerifyOTP.tsx'
 import Profile from './pages/Profile.tsx'
 import OrderDetail from './components/profile/OrderDetail.tsx'
 import WishListPage from './pages/WishListPage.tsx'
@@ -35,6 +36,7 @@ const App = () => {
       <ScrollToTop />
       <Routes >
         <Route path="register" element={<Register />} />
+        <Route path="verify-otp" element={<VerifyOTP />} />
         <Route path="login" element={<Login />} />
         <Route element={<UserLayout />}>
           <Route path='/' element={<HomePage />} />
