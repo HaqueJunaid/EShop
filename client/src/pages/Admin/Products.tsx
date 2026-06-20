@@ -11,6 +11,7 @@ interface Product {
   quantity: number;
   price: number;
   category?: string;
+  subCategory?: string;
 }
 
 const demoProducts: Product[] = [

@@ -1,15 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { X } from "lucide-react";
+import { navigationDropdown } from "../../constants/navigation";
 
 export interface Product {
   id: string;
   title: string;
   imageUrl?: string | "";
+  imageUrls?: string[];
   description: string;
   quantity: number;
   price: number;
   category?: string;
+  subCategory?: string;
+  hasVariants?: boolean;
+  variantTitle?: string;
+  variantImages?: string;
 }
 
 interface ProductAddFormProps {
@@ -31,8 +37,41 @@ const ProductAddForm: React.FC<ProductAddFormProps> = ({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<Product>();
+
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [objectUrls, setObjectUrls] = useState<string[]>([]);
+
+  const selectedCategory = watch("category");
+  const hasVariants = watch("hasVariants");
+  const selectedCategoryItem = navigationDropdown.find(
+    (item) => item.title === selectedCategory,
+  );
+  const subCategoryOptions = selectedCategoryItem?.baseItems ?? [];
+
+  const clearImagePreviews = () => {
+    objectUrls.forEach(URL.revokeObjectURL);
+    setObjectUrls([]);
+    setImagePreviews([]);
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files ? Array.from(event.target.files) : [];
+    const urls = files.map((file) => URL.createObjectURL(file));
+
+    objectUrls.forEach(URL.revokeObjectURL);
+    setObjectUrls(urls);
+    setImagePreviews(urls);
+  };
+
+  useEffect(() => {
+    if (selectedCategory) {
+      setValue("subCategory", "");
+    }
+  }, [selectedCategory, setValue]);
 
   useEffect(() => {
     if (isOpen) {
@@ -46,7 +85,11 @@ const ProductAddForm: React.FC<ProductAddFormProps> = ({
           quantity: 0,
           price: 0,
           imageUrl: "",
-          category: "",
+          category: "Assets",
+          subCategory: "",
+          hasVariants: false,
+          variantTitle: "",
+          variantImages: "",
         });
       }
     }
@@ -65,15 +108,23 @@ const ProductAddForm: React.FC<ProductAddFormProps> = ({
   };
 
   const onSubmit: SubmitHandler<Product> = (data) => {
+    const productData: Product = {
+      ...data,
+      imageUrl: imagePreviews[0] ?? data.imageUrl,
+      imageUrls: imagePreviews.length ? imagePreviews : data.imageUrls,
+    };
+
     if (productToEdit) {
-      onAddProduct(data);
+      onAddProduct(productData);
     } else {
       const nextId = generateNextId(existingIds);
       onAddProduct({
-        ...data,
+        ...productData,
         id: nextId,
       });
     }
+
+    clearImagePreviews();
     reset();
     onClose();
   };
@@ -109,14 +160,93 @@ const ProductAddForm: React.FC<ProductAddFormProps> = ({
         <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4 text-left">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1.5">Category</label>
-            <input
-              type="text"
+            <select
               {...register("category", { required: "Category is required" })}
+              defaultValue="Assets"
               className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-2.5 text-sm text-stone-700 outline-none focus:border-stone-900 focus:bg-white transition-all"
-              placeholder="e.g. Electronics"
-            />
+            >
+              <option value="Assets">Assets</option>
+              <option value="Boards & Signage">Boards & Signage</option>
+              <option value="Room Stationery">Room Stationery</option>
+              <option value="Utility Stationery">Utility Stationery</option>
+              <option value="Fun & Entertainment">Fun & Entertainment</option>
+              <option value="Thermatic Elements">Thermatic Elements</option>
+              <option value="Favour & Gifts">Favour & Gifts</option>
+              <option value="Invites & Planner">Invites & Planner</option>
+            </select>
             {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message}</p>}
           </div>
+
+          {subCategoryOptions.length > 0 && (
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1.5">Sub Category</label>
+              <select
+                {...register("subCategory", {
+                  validate: (value) =>
+                    subCategoryOptions.length === 0 || value
+                      ? true
+                      : "Sub Category is required",
+                })}
+                className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-2.5 text-sm text-stone-700 outline-none focus:border-stone-900 focus:bg-white transition-all"
+              >
+                <option value="">Select sub category</option>
+                {subCategoryOptions.map((item) => (
+                  <option key={item.url} value={item.title}>
+                    {item.title}
+                  </option>
+                ))}
+              </select>
+              {errors.subCategory && (
+                <p className="text-red-500 text-xs mt-1">{errors.subCategory.message}</p>
+              )}
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="hasVariants"
+              {...register("hasVariants")}
+              className="h-4 w-4 rounded border-stone-300 text-stone-900 focus:ring-stone-900"
+            />
+            <label htmlFor="hasVariants" className="text-sm text-stone-700">
+              This product has variants
+            </label>
+          </div>
+
+          {hasVariants && (
+            <>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1.5">Variant Title</label>
+                <input
+                  type="text"
+                  {...register("variantTitle", {
+                    required: hasVariants ? "Variant title is required" : false,
+                  })}
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-2.5 text-sm text-stone-700 outline-none focus:border-stone-900 focus:bg-white transition-all"
+                  placeholder="e.g. Red, Large"
+                />
+                {errors.variantTitle && (
+                  <p className="text-red-500 text-xs mt-1">{errors.variantTitle.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1.5">Variant Images</label>
+                <textarea
+                  rows={3}
+                  {...register("variantImages", {
+                    required: hasVariants ? "Variant images are required" : false,
+                  })}
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-2.5 text-sm text-stone-700 outline-none focus:border-stone-900 focus:bg-white transition-all resize-none"
+                  placeholder="Add image URLs separated by commas"
+                />
+                {errors.variantImages && (
+                  <p className="text-red-500 text-xs mt-1">{errors.variantImages.message}</p>
+                )}
+              </div>
+            </>
+          )}
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1.5">Product Name</label>
@@ -162,14 +292,23 @@ const ProductAddForm: React.FC<ProductAddFormProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1.5">Image URL</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1.5">Product Images</label>
             <input
-              type="url"
-              {...register("imageUrl", { required: "Image URL is required" })}
-              className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-2.5 text-sm text-stone-700 outline-none focus:border-stone-900 focus:bg-white transition-all"
-              placeholder="https://images.unsplash.com/..."
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageChange}
+              className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-2.5 text-sm text-stone-700 outline-none file:text-stone-700 file:bg-white file:border file:border-stone-200 file:rounded-md file:px-3 file:py-2"
             />
-            {errors.imageUrl && <p className="text-red-500 text-xs mt-1">{errors.imageUrl.message}</p>}
+            {imagePreviews.length > 0 && (
+              <div className="grid grid-cols-3 gap-2 mt-3">
+                {imagePreviews.map((src, idx) => (
+                  <div key={`${src}-${idx}`} className="h-20 rounded-xl overflow-hidden border border-stone-200 bg-stone-100">
+                    <img src={src} alt={`Preview ${idx + 1}`} className="h-full w-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
