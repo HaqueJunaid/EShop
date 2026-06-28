@@ -6,6 +6,8 @@ import {
     logout,
     getCurrentUser,
     resendOTP,
+    googleAuth,
+    refreshToken,
 } from '../controllers/authController.js';
 import { protect, admin } from '../middlewares/auth.js';
 
@@ -15,7 +17,9 @@ const router = express.Router();
 router.post('/register', register);
 router.post('/verify-otp', verifyOTP);
 router.post('/login', login);
+router.post('/google', googleAuth);
 router.post('/resend-otp', resendOTP);
+router.post('/refresh-token', refreshToken);
 
 // Protected routes
 router.get('/me', protect, getCurrentUser);

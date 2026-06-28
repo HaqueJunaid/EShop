@@ -1,15 +1,18 @@
 import bcrypt from 'bcrypt';
 import { User } from '../models/User.js';
 import { sendOTPEmail, sendWelcomeEmail } from '../utils/emailService.js';
-import { generateToken, setTokenCookie, clearTokenCookie } from '../utils/tokenService.js';
+import { OAuth2Client } from 'google-auth-library';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken, setTokenCookie, clearTokenCookie } from '../utils/tokenService.js';
 import { generateOTP, getOTPExpireTime, isOTPExpired } from '../utils/otpService.js';
+import { config } from '../config/config.js';
+
+const googleClient = new OAuth2Client(config.google.clientId);
 
 // Register User
 export const register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        // Validate input
         if (!name || !email || !password) {
             return res.status(400).json({
                 success: false,
@@ -17,7 +20,6 @@ export const register = async (req, res) => {
             });
         }
 
-        // Check if user already exists
         const existingUser = await User.findOne({ email: email.toLowerCase() });
         if (existingUser) {
             return res.status(400).json({
@@ -26,14 +28,10 @@ export const register = async (req, res) => {
             });
         }
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Generate OTP
         const otp = generateOTP();
         const otpExpire = getOTPExpireTime();
 
-        // Create user
         const user = await User.create({
             name,
             email: email.toLowerCase(),
@@ -43,7 +41,6 @@ export const register = async (req, res) => {
             role: 'user',
         });
 
-        // Send OTP email
         await sendOTPEmail(user.email, otp, user.name);
 
         res.status(201).json({
@@ -65,7 +62,6 @@ export const verifyOTP = async (req, res) => {
     try {
         const { email, otp } = req.body;
 
-        // Validate input
         if (!email || !otp) {
             return res.status(400).json({
                 success: false,
@@ -73,7 +69,6 @@ export const verifyOTP = async (req, res) => {
             });
         }
 
-        // Find user with email (need to select OTP field)
         const user = await User.findOne({ email: email.toLowerCase() }).select('+otp +otpExpire');
 
         if (!user) {
@@ -83,7 +78,6 @@ export const verifyOTP = async (req, res) => {
             });
         }
 
-        // Check if OTP is expired
         if (isOTPExpired(user.otpExpire)) {
             return res.status(400).json({
                 success: false,
@@ -91,7 +85,6 @@ export const verifyOTP = async (req, res) => {
             });
         }
 
-        // Check if OTP is correct
         if (user.otp !== otp) {
             return res.status(400).json({
                 success: false,
@@ -99,30 +92,29 @@ export const verifyOTP = async (req, res) => {
             });
         }
 
-        // Mark user as verified
         user.isVerified = true;
         user.otp = undefined;
         user.otpExpire = undefined;
         await user.save();
 
-        // Send welcome email
         await sendWelcomeEmail(user.email, user.name);
 
-        // Generate token
-        const token = generateToken(user._id, user.role);
-
-        setTokenCookie(res, token);
+        const accessToken = generateAccessToken(user._id, user.role);
+        const refreshToken = generateRefreshToken(user._id, user.role);
+        setTokenCookie(res, accessToken, refreshToken);
 
         res.status(200).json({
             success: true,
             message: 'Email verified successfully',
-            token,
+            token: accessToken,
             user: {
                 id: user._id,
                 name: user.name,
                 email: user.email,
                 isVerified: user.isVerified,
                 role: user.role,
+                provider: user.provider,
+                avatar: user.avatar || null,
             },
         });
     } catch (error) {
@@ -139,7 +131,6 @@ export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Validate input
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
@@ -147,7 +138,6 @@ export const login = async (req, res) => {
             });
         }
 
-        // Find user with password field
         const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
 
         if (!user) {
@@ -157,7 +147,6 @@ export const login = async (req, res) => {
             });
         }
 
-        // Check if user is verified
         if (!user.isVerified) {
             return res.status(403).json({
                 success: false,
@@ -165,7 +154,6 @@ export const login = async (req, res) => {
             });
         }
 
-        // Compare password
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
         if (!isPasswordCorrect) {
@@ -175,21 +163,22 @@ export const login = async (req, res) => {
             });
         }
 
-        // Generate token
-        const token = generateToken(user._id, user.role);
-
-        setTokenCookie(res, token);
+        const accessToken = generateAccessToken(user._id, user.role);
+        const refreshToken = generateRefreshToken(user._id, user.role);
+        setTokenCookie(res, accessToken, refreshToken);
 
         res.status(200).json({
             success: true,
             message: 'Logged in successfully',
-            token,
+            token: accessToken,
             user: {
                 id: user._id,
                 name: user.name,
                 email: user.email,
                 isVerified: user.isVerified,
                 role: user.role,
+                provider: user.provider,
+                avatar: user.avatar || null,
             },
         });
     } catch (error) {
@@ -201,9 +190,124 @@ export const login = async (req, res) => {
     }
 };
 
+// Google Auth
+export const googleAuth = async (req, res) => {
+    try {
+        const { token } = req.body;
+
+        if (!token) {
+            return res.status(400).json({
+                success: false,
+                message: 'Google token is required',
+            });
+        }
+
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: config.google.clientId,
+        });
+
+        const payload = ticket.getPayload();
+
+        if (!payload?.email || !payload.email_verified) {
+            return res.status(400).json({
+                success: false,
+                message: 'Unable to verify Google account email',
+            });
+        }
+
+        const email = payload.email.toLowerCase();
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            user = await User.create({
+                name: payload.name || email.split('@')[0],
+                email,
+                provider: 'google',
+                googleId: payload.sub,
+                avatar: payload.picture || null,
+                isVerified: true,
+                role: 'user',
+            });
+        } else {
+            if (user.provider !== 'google') {
+                user.provider = 'google';
+            }
+            user.googleId = payload.sub;
+            user.avatar = payload.picture || user.avatar;
+            user.isVerified = true;
+            await user.save();
+        }
+
+        const accessToken = generateAccessToken(user._id, user.role);
+        const refreshToken = generateRefreshToken(user._id, user.role);
+        setTokenCookie(res, accessToken, refreshToken);
+
+        res.status(200).json({
+            success: true,
+            message: 'Logged in with Google successfully',
+            token: accessToken,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                isVerified: user.isVerified,
+                role: user.role,
+                avatar: user.avatar,
+                provider: user.provider,
+            },
+        });
+    } catch (error) {
+        console.error('Google auth error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Error logging in with Google',
+        });
+    }
+};
+
+// Refresh Access Token
+export const refreshToken = async (req, res) => {
+    try {
+        const tokenFromCookie = req.cookies.refreshToken;
+
+        if (!tokenFromCookie) {
+            return res.status(401).json({
+                success: false,
+                message: 'Refresh token missing from cookie',
+            });
+        }
+
+        const decoded = verifyRefreshToken(tokenFromCookie);
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not found',
+            });
+        }
+
+        const newAccessToken = generateAccessToken(user._id, user.role);
+        const newRefreshToken = generateRefreshToken(user._id, user.role);
+        setTokenCookie(res, newAccessToken, newRefreshToken);
+
+        return res.status(200).json({
+            success: true,
+            token: newAccessToken,
+        });
+    } catch (error) {
+        console.error('Refresh token error:', error);
+        return res.status(401).json({
+            success: false,
+            message: 'Invalid or expired refresh token',
+        });
+    }
+};
+
 // Logout User
 export const logout = (req, res) => {
-    res.clearCookie('token');
+    clearTokenCookie(res);
     res.status(200).json({
         success: true,
         message: 'Logged out successfully',
@@ -270,7 +374,6 @@ export const resendOTP = async (req, res) => {
             });
         }
 
-        // Generate new OTP
         const otp = generateOTP();
         const otpExpire = getOTPExpireTime();
 
@@ -278,7 +381,6 @@ export const resendOTP = async (req, res) => {
         user.otpExpire = otpExpire;
         await user.save();
 
-        // Send OTP email
         await sendOTPEmail(user.email, otp, user.name);
 
         res.status(200).json({

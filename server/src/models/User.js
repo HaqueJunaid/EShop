@@ -14,8 +14,21 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false,
         select: false, // Don't include password in queries by default
+    },
+    provider: {
+        type: String,
+        enum: ['email', 'google'],
+        default: 'email',
+    },
+    googleId: {
+        type: String,
+        default: null,
+    },
+    avatar: {
+        type: String,
+        default: null,
     },
     isVerified: {
         type: Boolean,
@@ -38,6 +51,20 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+});
+
+// Cascade delete addresses when user is removed
+userSchema.pre(['deleteOne', 'findOneAndDelete'], async function (next) {
+    try {
+        const query = this.getQuery ? this.getQuery() : { _id: this._id };
+        const user = await this.model.findOne(query);
+        if (user) {
+            await mongoose.model('Address').deleteMany({ user: user._id });
+        }
+    } catch (err) {
+        console.error('Error cascade deleting addresses:', err);
+    }
+    next();
 });
 
 export const User = mongoose.model('User', userSchema);

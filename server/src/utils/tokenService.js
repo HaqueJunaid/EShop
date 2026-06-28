@@ -2,58 +2,82 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config/config.js';
 
 /**
- * Generate JWT token with user id and role
- * @param {string} id - User ID
- * @param {string} role - User role (user or admin)
- * @returns {string} JWT token
+ * Generate Access Token (30 minutes)
  */
-export const generateToken = (id, role = 'user') => {
-    return jwt.sign({ id, role }, config.jwt.secret, {
-        expiresIn: config.jwt.expire,
+export const generateAccessToken = (id, role = 'user') => {
+    return jwt.sign({ id, role, type: 'access' }, config.jwt.accessSecret, {
+        expiresIn: '30m',
     });
 };
 
 /**
- * Verify and decode JWT token
- * @param {string} token - JWT token to verify
- * @returns {object} Decoded token payload
- * @throws {Error} If token is invalid or expired
+ * Generate Refresh Token (48 hours)
+ */
+export const generateRefreshToken = (id, role = 'user') => {
+    return jwt.sign({ id, role, type: 'refresh' }, config.jwt.refreshSecret, {
+        expiresIn: '48h',
+    });
+};
+
+// Backward compatibility helper
+export const generateToken = generateAccessToken;
+
+/**
+ * Verify Access Token
  */
 export const verifyToken = (token) => {
     try {
-        return jwt.verify(token, config.jwt.secret);
+        return jwt.verify(token, config.jwt.accessSecret);
     } catch (error) {
         throw new Error('Invalid or expired token');
     }
 };
 
 /**
- * Extract token from request
- * @param {object} req - Express request object
- * @returns {string|null} Token string or null
+ * Verify Refresh Token
+ */
+export const verifyRefreshToken = (token) => {
+    try {
+        return jwt.verify(token, config.jwt.refreshSecret);
+    } catch (error) {
+        throw new Error('Invalid or expired refresh token');
+    }
+};
+
+/**
+ * Extract access token from request (Headers or Cookie)
  */
 export const extractToken = (req) => {
     return req.cookies.token || req.headers.authorization?.split(' ')[1] || null;
 };
 
 /**
- * Set token in cookie
- * @param {object} res - Express response object
- * @param {string} token - JWT token
+ * Set token cookies in response securely
  */
-export const setTokenCookie = (res, token) => {
-    res.cookie('token', token, {
-        httpOnly: true,
-        secure: config.env === 'production',
-        sameSite: 'strict',
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    });
+export const setTokenCookie = (res, accessToken, refreshToken) => {
+    if (accessToken) {
+        res.cookie('token', accessToken, {
+            httpOnly: true,
+            secure: config.env === 'production',
+            sameSite: 'lax',
+            maxAge: 30 * 60 * 1000, // 30 mins
+        });
+    }
+    if (refreshToken) {
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true, // Prevents JavaScript access (XSS defense)
+            secure: config.env === 'production',
+            sameSite: 'lax',
+            path: '/api/auth', // Transmitted only to auth endpoints
+            maxAge: 48 * 60 * 60 * 1000, // 48 hours
+        });
+    }
 };
 
 /**
- * Clear token cookie
- * @param {object} res - Express response object
+ * Clear token cookies
  */
 export const clearTokenCookie = (res) => {
     res.clearCookie('token');
+    res.clearCookie('refreshToken', { path: '/api/auth' });
 };
