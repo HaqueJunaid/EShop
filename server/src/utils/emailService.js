@@ -58,6 +58,66 @@ export const sendWelcomeEmail = async (email, userName) => {
     }
 };
 
+// Contact Form Notification Email to Owner
+export const sendContactEmail = async (name, email, phone, message) => {
+    const mailOptions = {
+        from: config.email.user,
+        to: config.email.user,
+        replyTo: email,
+        subject: `New VivahStore Contact Message from ${name}`,
+        html: `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px; }
+                    .header { border-bottom: 2px solid #e41f66; padding-bottom: 10px; margin-bottom: 20px; }
+                    .header h2 { color: #e41f66; margin: 0; }
+                    .field { margin-bottom: 15px; }
+                    .label { font-weight: bold; color: #666; display: block; font-size: 12px; text-transform: uppercase; }
+                    .value { font-size: 15px; color: #222; }
+                    .message-box { background: #f9f9f9; border-left: 4px solid #e41f66; padding: 15px; margin-top: 10px; font-style: italic; border-radius: 4px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h2>New Contact Form Submission</h2>
+                    </div>
+                    <div class="field">
+                        <span class="label">Sender Name</span>
+                        <span class="value">${name}</span>
+                    </div>
+                    <div class="field">
+                        <span class="label">Email Address</span>
+                        <span class="value"><a href="mailto:${email}">${email}</a></span>
+                    </div>
+                    <div class="field">
+                        <span class="label">Phone Number</span>
+                        <span class="value">${phone || 'Not provided'}</span>
+                    </div>
+                    <div class="field">
+                        <span class="label">Message</span>
+                        <div class="message-box">${message.replace(/\\n/g, '<br/>')}</div>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Contact form email sent:', info.response);
+        return { success: true, message: 'Contact email sent to owner' };
+    } catch (error) {
+        console.error('Error sending contact email:', error);
+        throw new Error('Failed to send contact email');
+    }
+};
+
 // Email Tempelate
 const emailTemplates = {
     otpVerification: (name, otp) => `
@@ -68,69 +128,87 @@ const emailTemplates = {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
                 body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    background-color: #f5f5f5;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                    background-color: #faf9f6;
                     margin: 0;
-                    padding: 20px;
+                    padding: 40px 20px;
                 }
                 .container {
-                    max-width: 600px;
+                    max-width: 560px;
                     margin: 0 auto;
                     background-color: #ffffff;
                     padding: 40px;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    border-radius: 24px;
+                    border: 1px solid #f0ece6;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.02);
                 }
                 .header {
                     text-align: center;
+                    margin-bottom: 35px;
                 }
                 .header h1 {
                     color: #e41f66;
                     margin: 0;
-                    font-size: 40px;
-                    weight: 700;
+                    font-size: 32px;
+                    font-weight: 800;
+                    letter-spacing: 0.1em;
+                    text-transform: uppercase;
                 }
                 .header h4 {
-                    color: #e41f66;
-                    margin: 0;
-                    font-size: 16px;
-                    weight: 300;
-                    margin-bottom: 30px;
+                    color: #888888;
+                    margin: 5px 0 0 0;
+                    font-size: 11px;
+                    font-weight: 600;
+                    letter-spacing: 0.2em;
+                    text-transform: uppercase;
                 }
                 .content {
-                    color: #666666;
-                    line-height: 1.6;
-                    margin-bottom: 30px;
+                    color: #555555;
+                    line-height: 1.7;
+                    font-size: 14px;
+                }
+                .greeting {
+                    font-size: 16px;
+                    color: #111111;
+                    font-weight: 600;
+                    margin-bottom: 15px;
                 }
                 .otp-box {
-                    background-color: #ee7d9a;
-                    padding: 20px;
-                    border-radius: 8px;
+                    background: linear-gradient(135deg, #fff0f3 0%, #ffe5ec 100%);
+                    border: 1px dashed #e41f66;
+                    padding: 24px;
+                    border-radius: 16px;
                     text-align: center;
-                    margin: 20px 0;
+                    margin: 30px 0;
                 }
                 .otp-code {
-                    font-size: 32px;
-                    font-weight: bold;
+                    font-size: 36px;
+                    font-weight: 800;
                     color: #e41f66;
-                    letter-spacing: 5px;
+                    letter-spacing: 6px;
                     font-family: 'Courier New', monospace;
+                }
+                .warning {
+                    background-color: #fff9fa;
+                    border-left: 3px solid #e41f66;
+                    padding: 18px;
+                    margin: 30px 0 15px 0;
+                    border-radius: 8px;
+                    font-size: 12px;
+                    color: #777777;
+                    line-height: 1.6;
                 }
                 .footer {
                     text-align: center;
-                    color: #999999;
-                    font-size: 12px;
-                    border-top: 1px solid #eeeeee;
-                    padding-top: 20px;
-                    margin-top: 30px;
+                    color: #a0a0a0;
+                    font-size: 11px;
+                    border-top: 1px solid #f2ede7;
+                    padding-top: 25px;
+                    margin-top: 40px;
+                    line-height: 1.6;
                 }
-                .warning {
-                    background-color: #fff3cd;
-                    border-left: 4px solid #ffc107;
-                    padding: 15px;
-                    margin: 20px 0;
-                    border-radius: 4px;
-                    font-size: 14px;
+                .footer p {
+                    margin: 4px 0;
                 }
             </style>
         </head>
@@ -138,35 +216,34 @@ const emailTemplates = {
             <div class="container">
                 <div class="header">
                     <h1>Vivah Store</h1>
-                    <h4>Email Verification</h4>
+                    <h4>Security Verification</h4>
                 </div>
                 
                 <div class="content">
-                    <p>Hi <strong>${name}</strong>,</p>
-                    <p>Thank you for signing up! Please use the OTP code below to verify your email address:</p>
+                    <div class="greeting">Hi ${name},</div>
+                    <p>Thank you for signing up with Vivah Store. To verify your email address and activate your account, please enter the One-Time Password (OTP) below:</p>
                     
                     <div class="otp-box">
                         <div class="otp-code">${otp}</div>
                     </div>
                     
-                    <p>This OTP will expire in 10 minutes.</p>
+                    <p>This code is temporary and will expire in 10 minutes. If you did not request this verification, please ignore this message.</p>
                     
                     <div class="warning">
-                        <strong>Security Note:</strong> Never share this OTP with anyone. Our team will never ask for your OTP.
+                        <strong>Security Reminder:</strong> Never share this verification code with anyone. Our concierge and support superhumans will never request your OTP.
                     </div>
-                    
-                    <p>If you didn't sign up for this account, please ignore this email.</p>
                 </div>
                 
                 <div class="footer">
-                    <p>&copy; 2026 Our Service. All rights reserved.</p>
-                    <p>This is an automated email, please do not reply.</p>
+                    <p><strong>Vivah Store Stationery &amp; Graphic Studio</strong></p>
+                    <p>Surat, Gujarat, India</p>
+                    <p>This is an automated security notice. Please do not reply directly.</p>
                 </div>
             </div>
         </body>
         </html>
     `,
-    
+
     welcomeEmail: (name) => `
         <!DOCTYPE html>
         <html lang="en">
@@ -175,71 +252,111 @@ const emailTemplates = {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
                 body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    background-color: #f5f5f5;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                    background-color: #faf9f6;
                     margin: 0;
-                    padding: 20px;
+                    padding: 40px 20px;
                 }
                 .container {
-                    max-width: 600px;
+                    max-width: 560px;
                     margin: 0 auto;
                     background-color: #ffffff;
                     padding: 40px;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    border-radius: 24px;
+                    border: 1px solid #f0ece6;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.02);
                 }
                 .header {
                     text-align: center;
-                    margin-bottom: 30px;
+                    margin-bottom: 35px;
                 }
                 .header h1 {
-                    color: #333333;
+                    color: #e41f66;
                     margin: 0;
-                    font-size: 28px;
+                    font-size: 32px;
+                    font-weight: 800;
+                    letter-spacing: 0.1em;
+                    text-transform: uppercase;
+                }
+                .header h4 {
+                    color: #888888;
+                    margin: 5px 0 0 0;
+                    font-size: 11px;
+                    font-weight: 600;
+                    letter-spacing: 0.2em;
+                    text-transform: uppercase;
                 }
                 .content {
-                    color: #666666;
-                    line-height: 1.6;
+                    color: #555555;
+                    line-height: 1.7;
+                    font-size: 14px;
+                }
+                .greeting {
+                    font-size: 20px;
+                    color: #111111;
+                    font-weight: 700;
+                    margin-bottom: 15px;
+                    text-align: center;
+                }
+                .button-container {
+                    text-align: center;
+                    margin: 35px 0 20px 0;
                 }
                 .button {
                     display: inline-block;
-                    background-color: #2196F3;
-                    color: white;
-                    padding: 12px 30px;
-                    border-radius: 4px;
+                    background-color: #e41f66;
+                    color: #ffffff !important;
+                    padding: 14px 35px;
+                    border-radius: 12px;
                     text-decoration: none;
-                    margin: 20px 0;
+                    font-weight: 700;
+                    font-size: 13px;
+                    letter-spacing: 0.1em;
+                    text-transform: uppercase;
+                    box-shadow: 0 4px 15px rgba(228, 31, 102, 0.2);
+                    transition: background-color 0.3s;
+                }
+                .button:hover {
+                    background-color: #c60b4d;
                 }
                 .footer {
                     text-align: center;
-                    color: #999999;
-                    font-size: 12px;
-                    border-top: 1px solid #eeeeee;
-                    padding-top: 20px;
-                    margin-top: 30px;
+                    color: #a0a0a0;
+                    font-size: 11px;
+                    border-top: 1px solid #f2ede7;
+                    padding-top: 25px;
+                    margin-top: 40px;
+                    line-height: 1.6;
+                }
+                .footer p {
+                    margin: 4px 0;
                 }
             </style>
         </head>
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>Welcome! 🎉</h1>
+                    <h1>Vivah Store</h1>
+                    <h4>Welcome to the Family</h4>
                 </div>
                 
                 <div class="content">
-                    <p>Hi <strong>${name}</strong>,</p>
-                    <p>Welcome to our service! Your email has been verified and your account is now active.</p>
+                    <div class="greeting">Welcome, ${name}! 🎉</div>
+                    <p>We are absolutely thrilled to welcome you to Vivah Store. Your email address has been successfully verified, and your premium account is now active.</p>
                     
-                    <p>You can now log in and start using all the features available.</p>
+                    <p>As a member of Vivah Store, you gain access to our custom graphic studio, luxury wedding template designs, custom acrylic welcome boards, room itineraries, and elegant hampers designed to make your celebrations truly unforgettable.</p>
                     
-                    <p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
+                    <div class="button-container">
+                        <a href="https://vivahstore.vercel.app/" class="button" target="_blank">Explore Collections</a>
+                    </div>
                     
-                    <p>Happy to have you on board!</p>
+                    <p>If you need any custom support or want to discuss a customized order, feel free to reply directly or contact our studio concierge.</p>
                 </div>
                 
                 <div class="footer">
-                    <p>&copy; 2026 Our Service. All rights reserved.</p>
-                    <p>This is an automated email, please do not reply.</p>
+                    <p><strong>Vivah Store Stationery &amp; Graphic Studio</strong></p>
+                    <p>Surat, Gujarat, India</p>
+                    <p>Thank you for choosing luxury. Enjoy your journey with us!</p>
                 </div>
             </div>
         </body>

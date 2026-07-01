@@ -10,6 +10,7 @@ import authRoutes from './routes/authRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import addressRoutes from './routes/addressRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 import aj from './config/arcjet.js';
 import { isSpoofedBot } from '@arcjet/inspect';
 
@@ -54,7 +55,7 @@ app.use(async (req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-    res.send("Hello World!");
+  res.send("Hello World!");
 });
 
 // Auth routes
@@ -69,6 +70,9 @@ app.use('/api/cart', cartRoutes);
 // Address routes
 app.use('/api/addresses', addressRoutes);
 
+// Contact routes
+app.use('/api/contact', contactRoutes);
+
 app.listen(config.port, () => {
-    console.log(`Server is running on port ${config.port}`);
+  console.log(`Server is running on port ${config.port}`);
 });
