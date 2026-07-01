@@ -1,11 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-
-type CollectionCardProps = {
-  title: string
-  imageUrl: string
-  to: string
-}
+import type { CollectionCardProps } from '../../types/allTypes'
 
 const CollectionCard: React.FC<CollectionCardProps> = ({ title, imageUrl, to }) => {
   return (

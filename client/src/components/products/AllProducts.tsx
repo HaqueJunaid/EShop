@@ -2,15 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Heading from '../common/Heading';
 import { ArrowLeft, Sparkles } from 'lucide-react';
-
-interface BentoCategory {
-  title: string;
-  url: string;
-  imageUrl: string;
-  spanClass: string;
-  badge?: string;
-  subtitle: string;
-}
+import type { BentoCategory } from '../../types/allTypes';
 
 const bentoCategories: BentoCategory[] = [
   {

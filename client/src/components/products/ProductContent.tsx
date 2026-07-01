@@ -1,14 +1,35 @@
 import React, { useState, useRef, type ChangeEvent } from 'react'
 import type { ProductContentProps } from "../../types/allTypes";
-import AddToCartButton from '../common/AddToCartButton';
-import AddToWishListButton from '../common/AddToWishListButton';
+import AddToCartButton from '../cart/AddToCartButton';
+import AddToWishListButton from '../wishlist/AddToWishListButton';
 
+const FIELD_CONFIG: Record<string, { label: string; placeholder: string; type: string }> = {
+    coupleName: { label: "Couple Name", placeholder: "Enter couple name", type: "text" },
+    customDescription: { label: "Custom Description", placeholder: "Enter custom description", type: "text" },
+    customTags: { label: "Custom Tags", placeholder: "Enter custom tags", type: "text" },
+};
 
-const ProductContent: React.FC<ProductContentProps> = ({ id, title, price, inStock, canUploadImage, variants, customizable, handleVariantChange }) => {
+const ProductContent: React.FC<ProductContentProps> = ({ 
+    id, 
+    title, 
+    price, 
+    description,
+    inStock, 
+    canUploadImage, 
+    variants, 
+    isCustomizable,
+    customizations: activeCustomizationKeys,
+    handleVariantChange 
+}) => {
     const [uploadedImage, setUploadedImage] = useState<string | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [quantity, setQuantity] = useState(1)
     const [activeVariant, setActiveVariant] = useState(0)
+    const [customizations, setCustomizations] = useState<Record<string, string>>({})
+
+    const handleCustomizationChange = (key: string, value: string) => {
+        setCustomizations(prev => ({ ...prev, [key]: value }));
+    }
 
     const handleQunatityChange = (incOrDec: 'inc' | 'dec') => {
         if (incOrDec === 'inc') {
@@ -38,89 +59,84 @@ const ProductContent: React.FC<ProductContentProps> = ({ id, title, price, inSto
         }
     }
 
-
     const normalizedActionPrice = Number(String(price).replace(/[^0-9.-]/g, '')) || 0
+    const textKeys = (activeCustomizationKeys || []).filter(key => key !== 'customImage');
 
     return (
-        <div className='flex flex-col md:flex-col gap-2 py-6'>
-            <div className='flex flex-col flex-nowrap gap-2 mb-4 pb-4 border-stone-300 border-b border-dashed h-fit overflow-auto text-stone-800'>
+        <div className='flex flex-col gap-4 py-2 w-full'>
+            <div className='flex flex-col gap-2.5 mb-6 pb-6 border-b border-stone-200/80 text-stone-900'>
                 {inStock ? (
-                    <span className='bg-green-500 px-2 py-1 rounded-full w-fit font-medium text-white text-xs'>In Stock</span>
+                    <span className='flex items-center gap-1.5 text-xs text-[#E41F66] font-semibold tracking-widest uppercase'>
+                        <span className='size-1.5 rounded-full bg-[#E41F66] animate-pulse' />
+                        In Stock
+                    </span>
                 ) : (
-                    <span className='bg-red-500 px-2 py-1 rounded-full w-fit font-medium text-white text-xs'>Out of Stock</span>
+                    <span className='flex items-center gap-1.5 text-xs text-stone-500 font-semibold tracking-widest uppercase'>
+                        <span className='size-1.5 rounded-full bg-stone-400' />
+                        Out of Stock
+                    </span>
                 )}
-                <h2 className='font-semibold text-3xl capitalize'>{title}</h2>
-                <p className='text-stone-500 text-lg md:text-2xl'>₹{price}</p>
+                <h1 className='font-sans font-medium text-3xl sm:text-4xl tracking-wide capitalize leading-tight text-stone-900'>{title}</h1>
+                <p className='text-[#E41F66] font-semibold text-2xl tracking-wide mt-1'>₹{price}</p>
             </div>
-            <div className='flex flex-col pb-8 border-stone-300 border-b border-dashed'>
-                <label className='text-stone-800'>Enter the no of Quantities (Pcs)</label>
-                <div className='flex items-center gap-2'>
-                    <button onClick={() => handleQunatityChange('dec')} className='relative bg-stone-900 hover:bg-stone-950 mt-2 border border-stone-200 rounded-full w-10 h-10 text-stone-50 active:scale-95 cursor-pointer'>
-                        <span className='top-1/2 left-1/2 absolute -translate-x-1/2 -translate-y-1/2'>-</span>
-                    </button>
-                    <div className='relative flex justify-center items-center mt-2 border border-stone-200 focus:border-stone-500 rounded-md outline-none w-10 h-10 text-center'>
-                        <span className='absolute text-stone-800'>{quantity}</span>
-                    </div>
-                    <button onClick={() => handleQunatityChange('inc')} className='relative bg-stone-900 hover:bg-stone-950 mt-2 border border-stone-200 rounded-full w-10 h-10 text-stone-50 active:scale-95 cursor-pointer'>
-                        <span className='top-1/2 left-1/2 absolute -translate-x-1/2 -translate-y-1/2'>+</span>
-                    </button>
 
+            {/* Product Description */}
+            {description && (
+                <div className='pb-6 border-b border-stone-200/80'>
+                    <span className='text-[10px] uppercase tracking-[0.2em] text-stone-500 font-semibold block mb-2'>Description</span>
+                    <p className='text-stone-600 text-sm leading-relaxed whitespace-pre-line font-light'>
+                        {description}
+                    </p>
                 </div>
+            )}
 
+            {/* Quantity selection */}
+            <div className='flex flex-col gap-3 pb-6 border-b border-stone-200/80'>
+                <span className='text-[10px] uppercase tracking-[0.2em] text-stone-500 font-semibold'>Quantity</span>
+                <div className='flex items-center border border-stone-300 w-fit rounded-none bg-white'>
+                    <button 
+                        type="button" 
+                        onClick={() => handleQunatityChange('dec')} 
+                        className='px-4 py-2.5 hover:bg-stone-50 text-stone-600 transition-colors cursor-pointer select-none text-base font-medium border-r border-stone-200'
+                    >
+                        -
+                    </button>
+                    <span className='px-6 text-stone-900 font-medium min-w-12 text-center select-none text-sm'>{quantity}</span>
+                    <button 
+                        type="button" 
+                        onClick={() => handleQunatityChange('inc')} 
+                        className='px-4 py-2.5 hover:bg-stone-50 text-stone-600 transition-colors cursor-pointer select-none text-base font-medium border-l border-stone-200'
+                    >
+                        +
+                    </button>
+                </div>
             </div>
-            {canUploadImage && <div className='flex flex-col pt-3 pb-8 border-stone-300 border-b border-dashed'>
-                <h3 className='mb-2 text-stone-800'>Upload Your Image</h3>
-                {uploadedImage ? (
-                    <div className='flex flex-col items-center gap-3 w-80'>
-                        <img src={uploadedImage} alt='Uploaded preview' className='border border-stone-300 rounded-md w-fit h-48 object-cover' />
-                        <button
-                            type='button'
-                            onClick={clearUploadedImage}
-                            className='text-stone-600 hover:text-stone-800 text-sm underline'
-                        >
-                            Remove image
-                        </button>
-                    </div>
-                ) : (
-                    <label htmlFor="fileInput" className="flex flex-col items-center gap-4 p-8 border border-stone-300 hover:border-stone-500 border-dashed rounded-md w-80 text-sm transition cursor-pointer">
-                        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M25.665 3.667H11a3.667 3.667 0 0 0-3.667 3.666v29.334A3.667 3.667 0 0 0 11 40.333h22a3.667 3.667 0 0 0 3.666-3.666v-22m-11-11 11 11m-11-11v11h11m-7.333 9.166H14.665m14.667 7.334H14.665M18.332 16.5h-3.667" stroke="#292524" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        <p className="text-gray-500">Drag & drop your files here</p>
-                        <p className="text-gray-400">Or <span className="text-stone-800 underline">click</span> to upload</p>
-                        <input
-                            id="fileInput"
-                            ref={fileInputRef}
-                            type="file"
-                            className="hidden"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                        />
-                    </label>
-                )}
-            </div>}
-            {variants && <div className='flex flex-col pt-3 pb-8 border-stone-300 border-b border-dashed'>
-                <h3 className='mb-2 text-stone-800'>Design Variants</h3>
-                <div className='flex flex-wrap gap-4'>
-                    {variants.map((variant, index) => (
-                        <div key={index} onClick={() => { setActiveVariant(index); handleVariantChange(index); }} className={`relative flex flex-col items-center gap-2 ${activeVariant === index ? 'outline-2 outline-[#E41F66] rounded-md p-1' : ''} cursor-pointer`}>
-                            <img src={variant.images[0]} alt={variant.name} className='border border-stone-300 rounded-md w-20 h-23 object-cover' />
-                            {activeVariant === index && <p className='bottom-0 z-10 absolute bg-[#E41F66] w-full text-stone-50 text-xs text-center'>Selected</p>}
+
+            {/* Custom Image Uploader */}
+            {canUploadImage && (
+                <div className='flex flex-col gap-3 pt-3 pb-6 border-b border-stone-200/80'>
+                    <span className='text-[10px] uppercase tracking-[0.2em] text-stone-500 font-semibold'>Upload Custom Image</span>
+                    {uploadedImage ? (
+                        <div className='flex flex-col items-start gap-3 w-80'>
+                            <div className='border border-stone-200 rounded-none p-1 bg-white relative group'>
+                                <img src={uploadedImage} alt='Uploaded preview' className='w-auto h-48 object-cover' />
+                                <button
+                                    type='button'
+                                    onClick={clearUploadedImage}
+                                    className='absolute top-2 right-2 bg-stone-900/85 hover:bg-stone-900 text-white rounded-full p-1.5 opacity-90 transition-opacity cursor-pointer text-xs'
+                                    aria-label="Remove image"
+                                >
+                                    ✕
+                                </button>
+                            </div>
                         </div>
-                    ))}
-                </div>
-            </div>}
-            {customizable && <div className='flex flex-col pt-3 pb-4 border-stone-300 border-b border-dashed'>
-                {Object.entries(customizable).filter(([_, config]) => config).map(([key, config]: [string, any], index: number) => (
-                    <div key={index} className='flex flex-col gap-2'>
-                        <label className='text-stone-800 capitalize'>{key.replace(/([A-Z])/g, ' $1').trim()}</label>
-                        {/* @ts-ignore */}
-                        {config.type === "file" ? <label htmlFor="fileInput" className="flex flex-col items-center gap-4 mb-4 p-4 border border-stone-300 hover:border-stone-500 border-dashed rounded-md w-80 text-sm transition cursor-pointer">
-                            <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M25.665 3.667H11a3.667 3.667 0 0 0-3.667 3.666v29.334A3.667 3.667 0 0 0 11 40.333h22a3.667 3.667 0 0 0 3.666-3.666v-22m-11-11 11 11m-11-11v11h11m-7.333 9.166H14.665m14.667 7.334H14.665M18.332 16.5h-3.667" stroke="#292524" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    ) : (
+                        <label htmlFor="fileInput" className="flex flex-col items-center gap-3 p-8 border border-stone-300 hover:border-[#E41F66]/50 border-dashed rounded-none w-full max-w-md text-sm transition-colors cursor-pointer bg-white group">
+                            <svg className="size-8 text-stone-400 group-hover:text-[#E41F66] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
-                            <p className="text-gray-500">Drag & drop your files here</p>
-                            <p className="text-gray-400">Or <span className="text-stone-800 underline">click</span> to upload</p>
+                            <p className="text-stone-500 text-xs tracking-wide">Drag & drop your reference file here</p>
+                            <p className="text-stone-400 text-xs">Or <span className="text-stone-900 font-semibold underline">browse file</span></p>
                             <input
                                 id="fileInput"
                                 ref={fileInputRef}
@@ -130,17 +146,86 @@ const ProductContent: React.FC<ProductContentProps> = ({ id, title, price, inSto
                                 onChange={handleFileChange}
                             />
                         </label>
-                            :
-                            <input type={config.type} placeholder={config.placeholder} className={`mb-4 p-2 border border-stone-300 rounded-md`} />}
-
-                    </div>
-                ))}
-            </div>}
-            <div className='flex gap-5 pt-3 pb-4 border-stone-300 border-b border-dashed'>
-                <div className='flex items-center gap-2 cursor-pointer'>
-                    <AddToWishListButton id={id} title={title} price={normalizedActionPrice} imageUrl={variants?.[activeVariant]?.images?.[0]} /> Wishlist
+                    )}
                 </div>
-                <AddToCartButton product={{ id, title, price: String(normalizedActionPrice), imageUrl: variants?.[activeVariant]?.images?.[0] }} />
+            )}
+
+            {/* Design Variants */}
+            {variants && variants.length > 0 && (
+                <div className='flex flex-col gap-3 pt-3 pb-6 border-b border-stone-200/80'>
+                    <span className='text-[10px] uppercase tracking-[0.2em] text-stone-500 font-semibold'>Design Variants</span>
+                    <div className='flex flex-wrap gap-4'>
+                        {variants.map((variant, index) => (
+                            <button 
+                                type="button"
+                                key={index} 
+                                onClick={() => { setActiveVariant(index); handleVariantChange(index); }} 
+                                className={`relative flex flex-col items-center gap-1.5 bg-white p-0.5 border transition-all duration-300 cursor-pointer rounded-none ${
+                                    activeVariant === index 
+                                        ? 'border-[#E41F66] ring-1 ring-[#E41F66]/30' 
+                                        : 'border-stone-200 hover:border-stone-400'
+                                }`}
+                            >
+                                <img src={variant.images[0]} alt={variant.name} className='w-16 h-20 object-cover' />
+                                <span className='text-[10px] tracking-wide text-stone-600 px-1 py-0.5'>{variant.name}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Dynamically Selected Text Customization Fields */}
+            {isCustomizable && textKeys.length > 0 && (
+                <div className='flex flex-col pt-3 pb-6 border-b border-stone-200/80 gap-4'>
+                    <span className='text-[10px] uppercase tracking-[0.2em] text-stone-500 font-semibold'>Product Customization</span>
+                    <div className='space-y-4'>
+                        {textKeys.map((key) => {
+                            const config = FIELD_CONFIG[key] || { 
+                                label: key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim(), 
+                                placeholder: `Enter ${key}`, 
+                                type: "text" 
+                            };
+                            return (
+                                <div key={key} className='flex flex-col gap-1.5'>
+                                    <label className='text-stone-700 text-xs font-semibold uppercase tracking-wider'>{config.label}</label>
+                                    <input 
+                                        type={config.type} 
+                                        placeholder={config.placeholder} 
+                                        value={customizations[key] || ''} 
+                                        onChange={(e) => handleCustomizationChange(key, e.target.value)} 
+                                        className='p-3 border border-stone-200 focus:border-[#E41F66] rounded-none outline-none text-sm transition bg-white' 
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* Actions: Add to Cart and Wishlist */}
+            <div className='flex gap-4 pt-6 pb-6 items-stretch w-full'>
+                <div className='flex-grow'>
+                    <AddToCartButton 
+                        product={{ 
+                            id, 
+                            title, 
+                            price: String(normalizedActionPrice), 
+                            imageUrl: variants?.[activeVariant]?.images?.[0],
+                            quantity,
+                            selectedVariant: variants?.[activeVariant],
+                            uploadedImage: uploadedImage || undefined,
+                            customizations
+                        }} 
+                        variant="luxury"
+                    />
+                </div>
+                <AddToWishListButton 
+                    id={id} 
+                    title={title} 
+                    price={normalizedActionPrice} 
+                    imageUrl={variants?.[activeVariant]?.images?.[0]} 
+                    variant="detail"
+                />
             </div>
         </div>
     )

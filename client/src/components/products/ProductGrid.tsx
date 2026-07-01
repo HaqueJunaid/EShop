@@ -1,11 +1,5 @@
 import React from 'react'
-
-type LayoutMode = 'grid-2' | 'grid-3' | 'grid-4' | 'list'
-
-type ProductGridProps = {
-  children: React.ReactNode
-  layout?: LayoutMode
-}
+import type { ProductGridProps, LayoutMode } from '../../types/allTypes'
 
 const ProductGrid: React.FC<ProductGridProps> = ({ children, layout = 'grid-4' }) => {
   const layoutClassName =

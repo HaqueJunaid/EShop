@@ -1,21 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { WishlistItemInterface, WishlistStoreInterface } from "../types/allTypes";
 
-interface WishlistItemInterface {
-    productId: string,
-    productName: string,
-    productPrice: number,
-    productImage: string,
-}
-
-interface WishlistStoreInterface {
-    wishlistItems: WishlistItemInterface[],
-    addWishlistItem: (wishlistItem: WishlistItemInterface) => void,
-    removeWishlistItem: (productId: string) => void,
-    clearWishlist: () => void,
-    getWishlistItemsLength: () => number,
-    isInWishlist: (productId: string) => boolean,
-}
 
 export const useWishlistStore = create<WishlistStoreInterface>()(
     persist(

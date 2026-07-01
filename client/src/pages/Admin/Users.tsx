@@ -1,15 +1,8 @@
-import { Eye, SearchIcon, Users2 } from "lucide-react"
+import { Eye, SearchIcon, Users2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { TableRowSkeleton } from "../../components/common/Skeletons";
+import type { AdminUser as User } from "../../types/allTypes";
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  date: string;
-  ordersCount: number;
-  totalSpent: number;
-  status: "Active" | "Inactive" | "Suspended";
-};
 const mockUsers: User[] = [
   {
     id: "USR-1001",
@@ -59,11 +52,18 @@ const mockUsers: User[] = [
 ];
 
 const Users = () => {
-  useEffect(() => {
-    document.title = "Admin | All Users"
-  }, [])
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    document.title = "Admin | All Users";
+    const timer = setTimeout(() => {
+      setUsers(mockUsers);
+      setLoading(false);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, []);
 
   const updateStatus = (userId: string, newStatus: User["status"]) => {
     setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status: newStatus } : u)));
@@ -80,14 +80,14 @@ const Users = () => {
 
   return (
     <div className="p-5 w-full min-h-screen overflow-x-hidden">
-      <div className="flex md:items-center justify-between flex-col md:flex-row gap-5 mb-6">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-3">
         <div className="flex items-center justify-start gap-2 text-stone-900">
           <Users2 size={28} />
-          <h1 className="text-2xl font-medium">All Orders</h1>
+          <h1 className="text-2xl font-medium">All Users</h1>
         </div>
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex items-center justify-start w-full md:justify-center gap-3">
           <input
-            className="w-[200px] rounded-full border border-stone-200 bg-stone-100 px-3 py-2 text-sm text-stone-700 focus:outline-2 focus:outline-stone-900"
+            className="w-full md:w-[200px] rounded-full border border-stone-200 bg-stone-100 px-3 py-2 text-sm text-stone-700 focus:outline-2 focus:outline-stone-900"
             type="text"
             placeholder="Search"
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -98,6 +98,7 @@ const Users = () => {
           </button>
         </div>
       </div>
+
       <div className="hidden md:block w-full overflow-x-auto rounded-3xl border border-stone-200 bg-white shadow-sm">
         <table className="min-w-175 w-full table-auto border-separate border-spacing-y-0">
           <thead className="bg-stone-100">
@@ -112,93 +113,112 @@ const Users = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.map((user) => (
-              <tr key={user.id} className="rounded-3xl overflow-hidden border border-stone-100 bg-white transition">
-                <td className="px-5 py-5 align-top">
-                  <div className="font-semibold text-stone-900">{user.id}</div>
-                </td>
-                <td className="px-5 py-5 align-top text-stone-700">{user.date}</td>
-                <td className="px-5 py-5 align-top">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-100 text-sm font-semibold text-stone-700">
-                      {user.name.split(" ").map(n => n[0]).join("")}
+            {loading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRowSkeleton key={i} columns={7} />
+              ))
+            ) : (
+              filteredUsers.map((user) => (
+                <tr key={user.id} className="rounded-3xl overflow-hidden border border-stone-100 bg-white transition">
+                  <td className="px-5 py-5 align-top">
+                    <div className="font-semibold text-stone-900">{user.id}</div>
+                  </td>
+                  <td className="px-5 py-5 align-top text-stone-700">{user.date}</td>
+                  <td className="px-5 py-5 align-top">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-100 text-sm font-semibold text-stone-700">
+                        {user.name.split(" ").map(n => n[0]).join("")}
+                      </div>
+                      <div>
+                        <div className="font-semibold text-stone-900">{user.name}</div>
+                        <div className="text-xs text-stone-500">{user.email}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-semibold text-stone-900">{user.name}</div>
-                      <div className="text-xs text-stone-500">{user.email}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-5 py-5 align-top text-stone-700">{user.ordersCount}</td>
-                <td className="px-5 py-5 align-top text-stone-900 font-semibold">
-                  ${user.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </td>
-                <td className="px-5 py-5 align-top">
-                  <select
-                    value={user.status}
-                    onChange={(e) => updateStatus(user.id, e.target.value as User["status"])}
-                    className="rounded-full border border-stone-200 bg-stone-100 px-3 py-2 text-sm text-stone-700 focus:outline-none"
-                  >
-                    <option>Active</option>
-                    <option>Inactive</option>
-                    <option>Suspended</option>
-                  </select>
-                </td>
-                <td className="px-5 py-5 align-top text-right">
-                  <button
-                    type="button"
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-500 transition hover:border-stone-300 hover:text-stone-900"
-                    aria-label="Show user details"
-                  >
-                    <Eye size={18} />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="px-5 py-5 align-top text-stone-700">{user.ordersCount}</td>
+                  <td className="px-5 py-5 align-top text-stone-900 font-semibold">
+                    ${user.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </td>
+                  <td className="px-5 py-5 align-top">
+                    <select
+                      value={user.status}
+                      onChange={(e) => updateStatus(user.id, e.target.value as User["status"])}
+                      className="rounded-full border border-stone-200 bg-stone-100 px-3 py-2 text-sm text-stone-700 focus:outline-none"
+                    >
+                      <option>Active</option>
+                      <option>Inactive</option>
+                      <option>Suspended</option>
+                    </select>
+                  </td>
+                  <td className="px-5 py-5 align-top text-right">
+                    <button
+                      type="button"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-500 transition hover:border-stone-300 hover:text-stone-900"
+                      aria-label="Show user details"
+                    >
+                      <Eye size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
-      {/* Card view for mobile */}
-      <div className="block md:hidden space-y-5">
-        {filteredUsers.map((user) => (
-          <div key={user.id} className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-stone-100 text-xs font-semibold text-stone-700">
+
+      {/* Mobile Card View */}
+      <div className="block md:hidden space-y-4">
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="p-4 border border-stone-200 bg-white rounded-2xl animate-pulse space-y-3">
+              <div className="w-1/3 h-4 bg-stone-200 rounded" />
+              <div className="w-2/3 h-4 bg-stone-200 rounded" />
+              <div className="w-1/2 h-4 bg-stone-200 rounded" />
+            </div>
+          ))
+        ) : (
+          filteredUsers.map((user) => (
+            <div key={user.id} className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-stone-900">{user.id}</span>
+                <span className="text-xs text-stone-500">{user.date}</span>
+              </div>
+              <div className="flex items-center gap-3 py-1">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-100 text-sm font-semibold text-stone-700">
                   {user.name.split(" ").map(n => n[0]).join("")}
                 </div>
-                <div>
-                  <span className="font-semibold text-stone-900 text-sm block">{user.name}</span>
-                  <span className="text-[10px] text-stone-500">{user.email}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold text-stone-900 truncate">{user.name}</div>
+                  <div className="text-xs text-stone-500 truncate">{user.email}</div>
                 </div>
               </div>
-              <span className="text-xs text-stone-500">{user.date}</span>
-            </div>
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-xs text-stone-500">ID: <b className="text-stone-900 font-semibold">{user.id}</b></span>
-            </div>
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-sm text-stone-700">Orders: <b>{user.ordersCount}</b></span>
-              <span className="text-base font-bold text-stone-900">
-                ${user.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-            </div>
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-stone-100">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between text-sm pt-2 border-t border-stone-100">
+                <span className="text-stone-600">Orders: <b className="text-stone-900">{user.ordersCount}</b></span>
+                <span className="text-stone-600">Spent: <b className="text-stone-900">${user.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</b></span>
+              </div>
+              <div className="flex items-center justify-between pt-1">
                 <select
                   value={user.status}
                   onChange={(e) => updateStatus(user.id, e.target.value as User["status"])}
-                  className="rounded-full border border-stone-200 bg-stone-100 px-3 py-1 text-xs text-stone-700 focus:outline-none"
+                  className="rounded-full border border-stone-200 bg-stone-100 px-3 py-1.5 text-xs text-stone-700 focus:outline-none"
                 >
                   <option>Active</option>
                   <option>Inactive</option>
                   <option>Suspended</option>
                 </select>
+                <button
+                  type="button"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-500 transition hover:border-stone-300 hover:text-stone-900"
+                  aria-label="Show user details"
+                >
+                  <Eye size={16} />
+                </button>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
+
       <div className="mt-8 shadow-sm rounded-3xl border-2 border-stone-200 bg-white p-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <h3 className="text-lg font-semibold text-stone-900 text-center md:text-left">User Summary</h3>
@@ -221,7 +241,7 @@ const Users = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Users
+export default Users;

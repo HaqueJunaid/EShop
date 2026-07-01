@@ -1,18 +1,6 @@
 import { Minus, Plus, X } from "lucide-react"
 import { useCartStore } from "../../store/cartStore"
-
-interface CartItem {
-    productId: number
-    productName: string
-    productPrice: number | string
-    productImage?: string
-    productQuantity: number
-}
-
-interface CartItemProps {
-    cartItems: CartItem[]
-    updateQuantity: (id: number, change: number) => void
-}
+import type { CartComponentItem as CartItem, CartComponentItemProps as CartItemProps } from "../../types/allTypes"
 
 const Cartitem = ({ cartItems, updateQuantity }: CartItemProps) => {
     const removeFromCart = useCartStore((state) => state.removeCartItem)
@@ -20,7 +8,7 @@ const Cartitem = ({ cartItems, updateQuantity }: CartItemProps) => {
     return (
         <div className="space-y-4">
             {cartItems.map((item) => (
-                <div key={item.productId} className="p-6 border border-stone-200 hover:border-stone-300 rounded-lg transition-colors">
+                <div key={item.productId} className="p-6 border border-stone-200 bg-white shadow-xs hover:border-stone-300 rounded-lg transition-colors">
                     <div className="relative flex md:flex-row flex-col md:items-center gap-4">
                         {/* Product Image */}
                         <div className="shrink-0 bg-stone-200 rounded-lg w-30 h-30">

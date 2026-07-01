@@ -1,13 +1,4 @@
-export interface BaseItem {
-  title: string;
-  url: string;
-}
-
-export interface DropdownItem {
-  title: string;
-  url: string;
-  baseItems?: BaseItem[];
-}
+import type { BaseItem, DropdownItem } from "../types/allTypes";
 
 export const navigationDropdown: DropdownItem[] = [
   { title: "Assets", url: "assets" },

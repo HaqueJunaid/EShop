@@ -1,21 +1,25 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import ScrollToTop from "./utils/ScrollToTop.tsx"; // Path to your helper file
 import UserLayout from './components/layout/userLayout.tsx'
-import HomePage from './pages/HomePage.tsx'
-import Faqs from './pages/Faqs.tsx'
-import AboutUs from './pages/AboutUs.tsx'
-import ContactUs from './pages/ContactUs.tsx'
+import HomePage from './pages/home/HomePage.tsx'
+import Faqs from './pages/faqs/Faqs.tsx'
+import AboutUs from './pages/static/AboutUs.tsx'
+import ContactUs from './pages/static/ContactUs.tsx'
 import ProductLayout from './components/layout/ProductLayout.tsx'
 import DetailProduct from './components/products/DetailProduct.tsx'
-import CartPage from './pages/CartPage.tsx'
-import Register from './pages/Register.tsx'
-import Login from './pages/Login.tsx'
-import VerifyOTP from './pages/VerifyOTP.tsx'
-import Profile from './pages/Profile.tsx'
+import CartPage from './pages/cart/CartPage.tsx'
+import Register from './pages/auth/Register.tsx'
+import Login from './pages/auth/Login.tsx'
+import VerifyOTP from './pages/auth/VerifyOTP.tsx'
+import Profile from './pages/profile/Profile.tsx'
 import OrderDetail from './components/profile/OrderDetail.tsx'
-import WishListPage from './pages/WishListPage.tsx'
-import NotFound from './pages/NotFound.tsx'
-import React from 'react';
+import WishListPage from './pages/wishlist/WishListPage.tsx'
+import NotFound from './pages/static/NotFound.tsx'
+import React, { useEffect } from 'react';
+import { useAuthStore } from './store/authStore';
+import { setAuthToken } from './services/api';
+import RequireAuth from './components/auth/RequireAuth';
+import RequireAdmin from './components/auth/RequireAdmin';
 import Dashboard from './pages/Admin/Dashboard.tsx';
 import Products from './pages/Admin/Products.tsx';
 import Insights from './pages/Admin/Insights.tsx';
@@ -29,7 +33,18 @@ const AdminLayout = React.lazy(() => import('./components/layout/AdminLayout.tsx
 // const Home = lazy(() => import("./pages/Home"));
 // const Settings = lazy(() => import("./pages/Settings")); 
 
+import { useCartStore } from './store/cartStore';
+
 const App = () => {
+  const token = useAuthStore((state) => state.token);
+  const syncWithBackend = useCartStore((state) => state.syncWithBackend);
+
+  useEffect(() => {
+    setAuthToken(token ?? undefined);
+    if (token) {
+      syncWithBackend();
+    }
+  }, [token, syncWithBackend]);
 
   return (
     <BrowserRouter>
@@ -43,7 +58,7 @@ const App = () => {
           <Route path='cart' element={<CartPage />} />
           <Route path='wishlist' element={<WishListPage />} />
           <Route path='faqs' element={<Faqs />} />
-          <Route path="profile" element={<Profile />} />
+          <Route path="profile" element={<RequireAuth><Profile /></RequireAuth>} />
           <Route path='about-us' element={<AboutUs />} />
           <Route path='contact-us' element={<ContactUs />} />
           <Route path="products" element={<ProductLayout />} />
@@ -51,7 +66,7 @@ const App = () => {
           <Route path="products/:id/details" element={<DetailProduct />} />
           <Route path="orders/:id" element={<OrderDetail />} />
         </Route>
-        <Route element={<AdminLayout />}>
+        <Route element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/products" element={<Products />} />
