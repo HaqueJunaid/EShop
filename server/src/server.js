@@ -19,9 +19,38 @@ connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const allowedOrigins = [
+  config.client_origin,
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, postman, etc.)
+      if (!origin) return callback(null, true);
+
+      const isAllowed = allowedOrigins.some((allowed) => {
+        if (!allowed) return false;
+        return allowed.toLowerCase() === origin.toLowerCase();
+      });
+
+      if (isAllowed) {
+        return callback(null, true);
+      }
+
+      // Allow Vercel preview or production deployments of the project
+      const isVercelOrigin = origin.endsWith('.vercel.app') && (
+        origin.includes('vivahstore') || origin.includes('haquejunaids-projects')
+      );
+
+      if (isVercelOrigin) {
+        return callback(null, true);
+      }
+
+      return callback(null, false);
+    },
     credentials: true,
   })
 );
